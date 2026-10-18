@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://2r0t5lvloc3n"]
+
+[ext_resource type="Script" uid="uid://dvbt83b5b13i8" path="res://Scenes/bullet.gd" id="1_14k46"]
+[ext_resource type="Texture2D" uid="uid://bagj6a8vebfqx" path="res://Assets/icon.svg" id="2_qvus8"]
+
+[node name="Bullet" type="Node2D" unique_id=1488978009]
+script = ExtResource("1_14k46")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2111028356]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("2_qvus8")
