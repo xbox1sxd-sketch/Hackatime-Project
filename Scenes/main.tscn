@@ -7,3 +7,9 @@
 script = ExtResource("1_bo1nx")
 
 [node name="Player" parent="." unique_id=1828675205 instance=ExtResource("1_jjgbg")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=404431334]
+
+[node name="MoneyLabel" type="Label" parent="CanvasLayer" unique_id=1407020922]
+offset_right = 40.0
+offset_bottom = 23.0
