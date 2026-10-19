@@ -4,6 +4,8 @@ var bullet_scene = preload("res://Scenes/Bullet.tscn")
 var margin = 32
 var fire_delay = 0.4
 var can_shoot = true
+var bullet_count = 1
+var spread = 0.15
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -24,14 +26,17 @@ func _input(event):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func shoot():
-	print("shoot at ", global_position)
+	if get_parent().game_over:
+		return
 	if not can_shoot:
 		return
 	can_shoot = false
-	var bullet = bullet_scene.instantiate()
-	bullet.global_position = global_position + Vector2(0, -40)
-	bullet.global_rotation = -PI / 2
-	get_parent().add_child(bullet)
+	for i in bullet_count:
+		var bullet = bullet_scene.instantiate()
+		var offset = ( i - (bullet_count - 1)/ 2.0) * spread
+		bullet.global_position = global_position + Vector2(0, -40)
+		bullet.global_rotation = -PI / 2 + offset
+		get_parent().add_child(bullet)
 	await get_tree().create_timer(fire_delay).timeout
 	can_shoot = true
 

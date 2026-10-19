@@ -4,6 +4,7 @@ extends Area2D
 var speed = 150
 
 func _ready():
+	add_to_group("asteroids")
 	area_entered.connect(_on_area_entered)
 	
 func _process(delta):
@@ -14,7 +15,7 @@ func _process(delta):
 		
 func _on_area_entered(area):
 	if area.is_in_group("bullets"):
-		get_parent().add_money(5)
+		get_parent().add_money(3)
 		area.queue_free()
 		queue_free()
 		
