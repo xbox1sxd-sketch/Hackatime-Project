@@ -3,10 +3,16 @@
 [ext_resource type="Script" uid="uid://drll1ck6olf6r" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://b7lknux6bgqxe" path="res://Assets/Ship_5.png" id="2_cvnsp"]
 
-[node name="Player" type="Node2D" unique_id=1828675205]
+[sub_resource type="CircleShape2D" id="CircleShape2D_cvnsp"]
+radius = 12.0
+
+[node name="Player" type="Area2D" unique_id=1044863816]
 position = Vector2(576, 324)
 scale = Vector2(3, 3)
 script = ExtResource("1_cvnsp")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1154393261]
 texture = ExtResource("2_cvnsp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1127007013]
+shape = SubResource("CircleShape2D_cvnsp")

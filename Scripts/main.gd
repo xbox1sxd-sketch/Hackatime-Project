@@ -38,8 +38,26 @@ func spawn_asteroid():
 		return
 	var asteroid = asteroid_scene.instantiate()
 	var screen = get_viewport_rect().size
-	asteroid.position = Vector2(randf_range(40, screen.x - 40), -40)
-	asteroid.speed = 150 + wave * 15
+	var roll = randf()
+	var big_chance = min(0.3, wave * 0.04)
+	var medium_chance = min(0.4, wave * 0.1)
+	if roll < big_chance:
+		asteroid.size = 2.0
+		asteroid.health = 5
+		asteroid.damage = 3
+		asteroid.speed = 80 + wave * 10
+	elif roll < big_chance + medium_chance:
+			asteroid.size = 1.4
+			asteroid.health = 2.0
+			asteroid.damage = 2
+			asteroid.speed = 120 + wave * 10
+	else:
+		asteroid.size = 1.0
+		asteroid.health = 1
+		asteroid.damage = 1
+		asteroid.speed = 250 + wave * 20
+	asteroid.value = int(2 * asteroid.size * asteroid.size)
+	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
 	to_spawn -= 1
 	if to_spawn <= 0:

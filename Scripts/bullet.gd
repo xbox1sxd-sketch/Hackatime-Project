@@ -1,5 +1,5 @@
 extends Area2D
-
+var damage = 1
 var speed = 1200
 func _ready():
 	add_to_group("bullets")

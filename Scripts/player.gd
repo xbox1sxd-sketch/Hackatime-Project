@@ -1,4 +1,4 @@
-extends Node2D
+extends Area2D
 
 var bullet_scene = preload("res://Scenes/Bullet.tscn")
 var margin = 32
@@ -8,6 +8,7 @@ var bullet_count = 1
 var spread = 0.15
 
 func _ready():
+	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	global_position = get_viewport_rect().size / 2
 
