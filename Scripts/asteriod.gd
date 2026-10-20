@@ -43,4 +43,22 @@ func die(killed_by_player):
 	if killed_by_player:
 		get_parent().add_money(value)
 		get_parent().play_sound(get_parent().boom_sound)
+	make_explosion()
 	queue_free()
+	
+func make_explosion():
+	var boom = CPUParticles2D.new()
+	boom.position = position
+	boom.one_shot = true
+	boom.explosiveness = 1.0
+	boom.amount = int(15 * size)
+	boom.lifetime = 0.5
+	boom.spread = 180
+	boom.gravity = Vector2.ZERO
+	boom.initial_velocity_min = 80
+	boom.initial_velocity_max = 200
+	boom.scale_amount_min = 3
+	boom.scale_amount_max = 6
+	boom.color = tint
+	boom.finished.connect(boom.queue_free)
+	get_parent().add_child(boom)

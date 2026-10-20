@@ -6,7 +6,7 @@ var fire_delay = 0.4
 var can_shoot = true
 var bullet_count = 1
 var spread = 0.15
-var bullet_damage = 1
+var bullet_damage = 2
 
 func _ready():
 	add_to_group("player")

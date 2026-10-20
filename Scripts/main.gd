@@ -5,21 +5,21 @@ var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
 var asteroid_scene = preload("res://Scenes/asteriod.tscn")
 var money = 0
-var fire_rate_cost = 10
+var fire_rate_cost = 60
 var health = 20
 var game_over = false
 var spawn_timer
 var wave = 0
 var to_spawn = 0
 var wave_active = false
-var multishot_cost = 25
-var repair_cost = 15
+var multishot_cost = 150
+var repair_cost = 40
 var max_health = 5
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
-var damage_cost = 40
+var damage_cost = 100
 var best_wave = 0
-var max_health_cost = 30
+var max_health_cost = 120
 const save_path = "user://save.json"
 
 
@@ -53,21 +53,21 @@ func spawn_asteroid():
 	if roll < big_chance:
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 2.0
-		asteroid.health = 8 + wave * 1.1
+		asteroid.health = 5 + wave * 0.7
 		asteroid.damage = 3
 		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 1.4
-			asteroid.health = 5 + wave *1.2
+			asteroid.health = 3 + wave * 0.6
 			asteroid.damage = 2
 			asteroid.speed = 175 + wave * 12
 	else:
-		asteroid.tint = Color(1.0, 1.0, 0.0, 1.0) 
+		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 1.0
-		asteroid.health = 2 + wave * 1.3
+		asteroid.health = 1 + wave * 0.5
 		asteroid.damage = 1
-		asteroid.speed = 400 + wave * 22
+		asteroid.speed = 300 + wave * 22
 	asteroid.value = int(2 * asteroid.size * asteroid.size)
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
