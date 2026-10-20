@@ -15,6 +15,11 @@ var repair_cost = 15
 var max_health = 5
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
+var damage_cost = 40
+var best_wave = 0
+const save_path = "user://save.json"
+
+
 
 func _ready():
 	money_label.position = Vector2(20, 20)
@@ -31,7 +36,6 @@ func start_next_wave():
 	spawn_timer.wait_time = max(0.3, 1.0 - wave * 0.05)
 	spawn_timer.start()
 	update_ui()
-	
 
 func spawn_asteroid():
 	if game_over:
@@ -48,7 +52,7 @@ func spawn_asteroid():
 		asteroid.speed = 80 + wave * 10
 	elif roll < big_chance + medium_chance:
 			asteroid.size = 1.4
-			asteroid.health = 2.0
+			asteroid.health = 3.0
 			asteroid.damage = 2
 			asteroid.speed = 120 + wave * 10
 	else:
@@ -100,6 +104,7 @@ func update_ui():
 		else:
 			shop += "\n[2] Multi-shot is MAX"
 		shop += "\n[3] Repair +1 (" + str(repair_cost) + ")"
+		shop += "\n[4] Damage +1 (" + str(damage_cost) + ")"
 		money_label.text = status + "\nHealth " + str(health) + "\nMoney: " + str(money) + shop
 
 func _input(event):
@@ -113,6 +118,15 @@ func _input(event):
 				buy_multishot()
 			if event.keycode == KEY_3:
 				buy_repair()
+			if event.keycode == KEY_4:
+				buy_damage()
+
+func buy_damage():
+	if money >= damage_cost:
+		money -= damage_cost
+		player.bullet_damage += 1
+		damage_cost = int(damage_cost * 1.8)
+		update_ui()
 
 func buy_multishot():
 	if player.bullet_count >= 5:
@@ -138,3 +152,44 @@ func buy_fire_rate():
 		player.fire_delay = max(0.1, player.fire_delay * 0.85)
 		fire_rate_cost = int(fire_rate_cost * 1.5)
 		update_ui()
+
+func play_sound(stream):
+	var p = AudioStreamPlayer.new()
+	p.stream = stream
+	add_child(p)
+	p.finished.connect(p.queue_free)
+	p.play()
+
+func save_game():
+	var data = {
+		"money": money,
+		"best_wave": best_wave,
+		"fire_delay": player.fire_delay,
+		"fire_rate_cost": fire_rate_cost,
+		"bullet_count": player.bullet.count,
+		"multishot_cost": multishot_cost,
+		"bullet_damage": player.bullet_damage,
+		"damage_cost": damage_cost,
+		"repair_cost": repair_cost,
+	}
+
+	var file = FileAccess.open(save_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	
+func load_game():
+	if not FileAccess.file_exists(save_path):
+		return
+	var file = FileAccess.open(save_path, FileAccess.READ)
+	var data = JSON.parse_string(file.get_as_text())
+	if data == null:
+		return
+	money = int(data.get("money", 0))
+	best_wave = int(data.get("best_wave", 0))
+	player.fire_delay = int(data.get("fire_delay", 0.4))
+	fire_rate_cost = int(data.get("fire_rate_cost", 10))
+	player.bullet_count= int(data.get("bullet_count", 1))
+	multishot_cost = int(data.get("multishot_cost", 25))
+	player.bullet_damage = int(data.get("bullet_damage", 1))
+	damage_cost = int(data.get("damage_cost", 40))
+	repair_cost = int(data.get("repair_cost", 15))
+	

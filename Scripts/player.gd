@@ -6,6 +6,7 @@ var fire_delay = 0.4
 var can_shoot = true
 var bullet_count = 1
 var spread = 0.15
+var bullet_damage = 1
 
 func _ready():
 	add_to_group("player")
@@ -34,6 +35,7 @@ func shoot():
 	can_shoot = false
 	for i in bullet_count:
 		var bullet = bullet_scene.instantiate()
+		bullet.damage = bullet_damage
 		var offset = ( i - (bullet_count - 1)/ 2.0) * spread
 		bullet.global_position = global_position + Vector2(0, -40)
 		bullet.global_rotation = -PI / 2 + offset
