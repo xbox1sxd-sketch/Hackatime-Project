@@ -33,6 +33,7 @@ func shoot():
 	if not can_shoot:
 		return
 	can_shoot = false
+	get_parent().play_sound(get_parent().shoot_sound)
 	for i in bullet_count:
 		var bullet = bullet_scene.instantiate()
 		bullet.damage = bullet_damage

@@ -1,6 +1,8 @@
 extends Node2D
 
-
+var shoot_sound = preload("res://Assets/shoot.wav")
+var boom_sound = preload("res://Assets/boom.wav")
+var hurt_sound = preload("res://Assets/hurt.wav")
 var asteroid_scene = preload("res://Scenes/asteriod.tscn")
 var money = 0
 var fire_rate_cost = 10
@@ -57,7 +59,7 @@ func spawn_asteroid():
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 1.4
-			asteroid.health = 50 + wave *1.2
+			asteroid.health = 5 + wave *1.2
 			asteroid.damage = 2
 			asteroid.speed = 175 + wave * 12
 	else:
@@ -93,6 +95,7 @@ func take_damage(amount):
 	if game_over:
 		return
 	health -= amount
+	play_sound(hurt_sound)
 	if health <= 0:
 		health = 0
 		game_over = true
@@ -190,6 +193,7 @@ func buy_fire_rate():
 
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
+	p.volume_db = -8
 	p.stream = stream
 	add_child(p)
 	p.finished.connect(p.queue_free)

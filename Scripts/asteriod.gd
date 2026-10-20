@@ -42,5 +42,5 @@ func on_hit():
 func die(killed_by_player):
 	if killed_by_player:
 		get_parent().add_money(value)
-		
+		get_parent().play_sound(get_parent().boom_sound)
 	queue_free()
