@@ -42,6 +42,3 @@ func shoot():
 		get_parent().add_child(bullet)
 	await get_tree().create_timer(fire_delay).timeout
 	can_shoot = true
-
-	if get_parent().game_over:
-		return

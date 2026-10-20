@@ -4,7 +4,7 @@ extends Node2D
 var asteroid_scene = preload("res://Scenes/asteriod.tscn")
 var money = 0
 var fire_rate_cost = 10
-var health = 5
+var health = 20
 var game_over = false
 var spawn_timer
 var wave = 0
@@ -17,6 +17,7 @@ var max_health = 5
 @onready var player = $Player
 var damage_cost = 40
 var best_wave = 0
+var max_health_cost = 30
 const save_path = "user://save.json"
 
 
@@ -27,6 +28,8 @@ func _ready():
 	spawn_timer = Timer.new()
 	spawn_timer.timeout.connect(spawn_asteroid)
 	add_child(spawn_timer)
+	load_game()
+	health = max_health
 	start_next_wave()
 
 func start_next_wave():
@@ -46,20 +49,23 @@ func spawn_asteroid():
 	var big_chance = min(0.3, wave * 0.04)
 	var medium_chance = min(0.4, wave * 0.1)
 	if roll < big_chance:
+		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 2.0
-		asteroid.health = 5
+		asteroid.health = 8 + wave * 1.1
 		asteroid.damage = 3
-		asteroid.speed = 80 + wave * 10
+		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
+			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 1.4
-			asteroid.health = 3.0
+			asteroid.health = 50 + wave *1.2
 			asteroid.damage = 2
-			asteroid.speed = 120 + wave * 10
+			asteroid.speed = 175 + wave * 12
 	else:
+		asteroid.tint = Color(1.0, 1.0, 0.0, 1.0) 
 		asteroid.size = 1.0
-		asteroid.health = 1
+		asteroid.health = 2 + wave * 1.3
 		asteroid.damage = 1
-		asteroid.speed = 250 + wave * 20
+		asteroid.speed = 400 + wave * 22
 	asteroid.value = int(2 * asteroid.size * asteroid.size)
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
@@ -72,6 +78,8 @@ func _process(delta):
 		return
 	if to_spawn <= 0 and get_tree().get_nodes_in_group("asteroids").size() == 0:
 		wave_active = false
+		best_wave = max(best_wave, wave)
+		save_game()
 		update_ui()
 		await get_tree().create_timer(3.0).timeout
 		if not game_over:
@@ -89,37 +97,48 @@ func take_damage(amount):
 		health = 0
 		game_over = true
 		spawn_timer.stop()
+		best_wave = max(best_wave, wave)
+		save_game()
 	update_ui()
+
+func get_shop_text():
+	var shop = "\n[1] Faster fire (" + str(fire_rate_cost) + ")"
+	if player.bullet_count < 5:
+		shop += "\n[2] Multi-shot (" + str(multishot_cost) + ")"
+	else:
+		shop += "\n[2] Multi-shot is MAX"
+	if not game_over:
+		shop += "\n[3] Repair +1 (" + str(repair_cost) + ")"
+	shop += "\n[4] Damage +1 (" + str(damage_cost) + ")"
+	if max_health < 15:
+		shop += "\n[5] Max health +1 (" + str(max_health_cost) + ")"
+	else:
+		shop += "\n[5] Max health is MAX"
+	return shop
 
 func update_ui():
 	if game_over:
-		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nMoney: " + str(money) + "\nPress R to restart"
+		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nBest wave: " + str(best_wave) + "\nMoney: " + str(money) + "\n" + get_shop_text() + "\n\nPress R to restart"
 	else:
 		var status = "Wave " + str(wave)
 		if not wave_active:
 			status += "\nWAVE CLEARED! Next wave is coming"
-		var shop = "\n[1] Faster fire (" + str(fire_rate_cost) + ")"
-		if player.bullet_count < 5:
-			shop += "\n[2] Multi-shot (" + str(multishot_cost) + ")"
-		else:
-			shop += "\n[2] Multi-shot is MAX"
-		shop += "\n[3] Repair +1 (" + str(repair_cost) + ")"
-		shop += "\n[4] Damage +1 (" + str(damage_cost) + ")"
-		money_label.text = status + "\nHealth " + str(health) + "\nMoney: " + str(money) + shop
+		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money) + get_shop_text()
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R and game_over:
 			get_tree().reload_current_scene()
-		if not game_over:
-			if event.keycode == KEY_1 and not game_over:
-				buy_fire_rate()
-			if event.keycode == KEY_2:
-				buy_multishot()
-			if event.keycode == KEY_3:
-				buy_repair()
-			if event.keycode == KEY_4:
-				buy_damage()
+		if event.keycode == KEY_1:
+			buy_fire_rate()
+		if event.keycode == KEY_2:
+			buy_multishot()
+		if event.keycode == KEY_3 and not game_over:
+			buy_repair()
+		if event.keycode == KEY_4:
+			buy_damage()
+		if event.keycode == KEY_5:
+			buy_max_health()
 
 func buy_damage():
 	if money >= damage_cost:
@@ -127,6 +146,19 @@ func buy_damage():
 		player.bullet_damage += 1
 		damage_cost = int(damage_cost * 1.8)
 		update_ui()
+		save_game()
+
+func buy_max_health():
+	if max_health >= 15:
+		return
+	if money >= max_health_cost:
+		money -= max_health_cost
+		max_health += 1
+		if not game_over:
+			health += 1
+		max_health_cost = int(max_health_cost * 1.6)
+		update_ui()
+		save_game()
 
 func buy_multishot():
 	if player.bullet_count >= 5:
@@ -136,7 +168,8 @@ func buy_multishot():
 		player.bullet_count += 1
 		multishot_cost = int(multishot_cost * 2)
 		update_ui()
-		
+		save_game()
+
 func buy_repair():
 	if health >= max_health:
 		return
@@ -145,6 +178,7 @@ func buy_repair():
 		health += 1
 		repair_cost = int(repair_cost * 1.3)
 		update_ui()
+		save_game()
 
 func buy_fire_rate():
 	if money >= fire_rate_cost:
@@ -152,6 +186,7 @@ func buy_fire_rate():
 		player.fire_delay = max(0.1, player.fire_delay * 0.85)
 		fire_rate_cost = int(fire_rate_cost * 1.5)
 		update_ui()
+		save_game()
 
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
@@ -166,11 +201,13 @@ func save_game():
 		"best_wave": best_wave,
 		"fire_delay": player.fire_delay,
 		"fire_rate_cost": fire_rate_cost,
-		"bullet_count": player.bullet.count,
+		"bullet_count": player.bullet_count,
 		"multishot_cost": multishot_cost,
 		"bullet_damage": player.bullet_damage,
 		"damage_cost": damage_cost,
 		"repair_cost": repair_cost,
+		"max_health": max_health,
+		"max_health_cost": max_health_cost
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -185,11 +222,13 @@ func load_game():
 		return
 	money = int(data.get("money", 0))
 	best_wave = int(data.get("best_wave", 0))
-	player.fire_delay = int(data.get("fire_delay", 0.4))
+	player.fire_delay = float(data.get("fire_delay", 0.4))
 	fire_rate_cost = int(data.get("fire_rate_cost", 10))
 	player.bullet_count= int(data.get("bullet_count", 1))
 	multishot_cost = int(data.get("multishot_cost", 25))
 	player.bullet_damage = int(data.get("bullet_damage", 1))
 	damage_cost = int(data.get("damage_cost", 40))
 	repair_cost = int(data.get("repair_cost", 15))
+	max_health = int(data.get("max_health", 5))
+	max_health_cost = int(data.get("max_health_cost", 30))
 	
