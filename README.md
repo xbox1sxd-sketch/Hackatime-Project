@@ -5,3 +5,5 @@ Incremental space shooter.
  How I built it  Built with Godot 4 and GDScript. The ship, bullets, and asteroids are separate scenes. Collisions use Area2D nodes and signals, and asteroids are spawned on a timer.  
  
  How to run: Install Godot 4. Clone or download this repo. In Godot, click Import, select project.godot, then press F5.  Controls: move the mouse to fly, left click to shoot, Esc to release the mouse.
+
+I have used AI (chatgpt) when I was unable to solve errors or was confused about something.
