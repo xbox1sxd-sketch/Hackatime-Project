@@ -52,19 +52,19 @@ func spawn_asteroid():
 	var medium_chance = min(0.4, wave * 0.1)
 	if roll < big_chance:
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
-		asteroid.size = 2.0
+		asteroid.size = 4.0
 		asteroid.health = 5 + wave * 0.7
 		asteroid.damage = 3
 		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
-			asteroid.size = 1.4
+			asteroid.size = 3.4
 			asteroid.health = 3 + wave * 0.6
 			asteroid.damage = 2
 			asteroid.speed = 175 + wave * 12
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
-		asteroid.size = 1.0
+		asteroid.size = 2.5
 		asteroid.health = 1 + wave * 0.5
 		asteroid.damage = 1
 		asteroid.speed = 300 + wave * 22

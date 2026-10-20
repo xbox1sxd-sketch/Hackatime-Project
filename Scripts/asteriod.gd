@@ -1,5 +1,6 @@
 extends Area2D
 
+var spin = 0.0
 var size = 1.0
 var health = 1
 var damage = 1
@@ -10,9 +11,11 @@ func _ready():
 	add_to_group("asteroids")
 	scale = Vector2.ONE * size
 	modulate = tint
+	spin = randf_range(-2.0, 2.0)
 	area_entered.connect(_on_area_entered)
 	
 func _process(delta):
+	rotation += spin * delta
 	position.y += speed * delta
 	if position.y > 700:
 		get_parent().take_damage(damage)
