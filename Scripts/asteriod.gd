@@ -26,7 +26,8 @@ func _on_area_entered(area):
 		take_hit(area.damage)
 	elif area.is_in_group("player"):
 		get_parent().take_damage(damage)
-		die(false)
+		get_parent().add_money(int(value/2))
+		die(true)
 
 func take_hit(amount):
 	health -= amount
