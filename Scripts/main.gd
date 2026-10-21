@@ -55,6 +55,7 @@ func spawn_asteroid():
 		asteroid.size = 4.0
 		asteroid.health = 5 + wave * 0.7
 		asteroid.damage = 3
+		asteroid.splits_left = 1
 		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
@@ -169,7 +170,7 @@ func buy_multishot():
 	if money >= multishot_cost:
 		money -= multishot_cost
 		player.bullet_count += 1
-		multishot_cost = int(multishot_cost * 2)
+		multishot_cost = int(multishot_cost * 3)
 		update_ui()
 		save_game()
 

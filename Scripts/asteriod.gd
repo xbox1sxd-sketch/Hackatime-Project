@@ -6,16 +6,24 @@ var health = 1
 var damage = 1
 var value = 5
 var speed = 150
+var splits_left = 0
+var drift = 0.0
+var start_health = 1
 var tint = Color.WHITE
+
+
+
 func _ready():
 	add_to_group("asteroids")
 	scale = Vector2.ONE * size
 	modulate = tint
 	spin = randf_range(-2.0, 2.0)
 	area_entered.connect(_on_area_entered)
+	start_health = health
 	
 func _process(delta):
 	rotation += spin * delta
+	position.x = clamp(position.x + drift * delta, 30, get_viewport_rect().size.x - 30)
 	position.y += speed * delta
 	if position.y > 700:
 		get_parent().take_damage(damage)
@@ -35,9 +43,27 @@ func _on_area_entered(area):
 func take_hit(amount):
 	health -= amount
 	if health <= 0:
+		split()
 		die(true)
 	else:
 		on_hit()
+
+func split():
+	if splits_left <= 0:
+		return
+	var main = get_parent()
+	for i in 2:
+		var kid = main.asteroid_scene.instantiate()
+		kid.tint = tint
+		kid.size = size * 0.7
+		kid.health = max(1, int(start_health * 0.4))
+		kid.damage = max(1, damage - 1)
+		kid.speed = speed * 1.15
+		kid.value = max(1, int(2 * kid.size * kid.size))
+		kid.splits_left = splits_left - 1
+		kid.drift = -80 + i * 160
+		kid.position = position + Vector2(-25 + i * 50, 0)
+		main.call_deferred("add_child", kid)
 
 func on_hit():
 	modulate = Color(2, 2, 2)
