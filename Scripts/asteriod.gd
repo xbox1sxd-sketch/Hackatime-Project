@@ -63,7 +63,7 @@ func split():
 		kid.health = max(1, int(start_health * 0.4))
 		kid.damage = max(1, damage - 1)
 		kid.speed = speed * 1.15
-		kid.value = max(1, int((2 + main.wave * 0.4) * kid.size * kid.size))
+		kid.value = max(1, int(value * 0.4))
 		kid.splits_left = splits_left - 1
 		kid.drift = -80 + i * 160
 		kid.position = position + Vector2(-25 + i * 50, 0)

@@ -22,6 +22,7 @@ var damage_cost = 100
 var best_wave = 0
 var max_health_cost = 120
 const save_path = "user://save.json"
+var upgrades_bought = 0
 
 
 
@@ -49,7 +50,7 @@ func spawn_boss():
 	boss.is_boss = true
 	boss.tint = Color(0.658, 0.144, 0.704, 1.0)
 	boss.size = 5.0
-	boss.health = 60 + wave * 8
+	boss.health = int(60 + get_level() * 8)
 	boss.damage = 5
 	boss.speed = 40
 	boss.value = 50 + wave * 10
@@ -67,27 +68,32 @@ func spawn_asteroid():
 	var asteroid = asteroid_scene.instantiate()
 	var screen = get_viewport_rect().size
 	var roll = randf()
+	var level = get_level()
 	var big_chance = min(0.3, wave * 0.04)
 	var medium_chance = min(0.4, wave * 0.1)
+	var base_value = 2
 	if roll < big_chance:
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 4.0
-		asteroid.health = 5 + wave * 0.7
+		asteroid.health = int(5 + level * 0.7)
 		asteroid.damage = 3 + floori(wave / 5.0)
 		asteroid.splits_left = 1
-		asteroid.speed = 100 + wave * 11
+		asteroid.speed = 90 + level * 11
+		base_value = 10
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 3.4
-			asteroid.health = 3 + wave * 0.6
+			asteroid.health = 3 + level * 0.6
 			asteroid.damage = 2 + floori(wave / 5.0)
-			asteroid.speed = 175 + wave * 12
+			asteroid.speed = 175 + level * 12
+			base_value = 5
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 2.5
-		asteroid.health = 1 + wave * 0.5
+		asteroid.health = 1 + level * 0.5
 		asteroid.damage = 1 + floori(wave / 5.0)
-		asteroid.speed = 300 + wave * 22
+		asteroid.speed = 300 + level * 22
+		base_value = 2
 	asteroid.value = int((2 + wave * 0.2) * asteroid.size * asteroid.size)
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
@@ -174,6 +180,7 @@ func _input(event):
 func buy_damage():
 	if money >= damage_cost:
 		money -= damage_cost
+		upgrades_bought += 1
 		player.bullet_damage += 1
 		damage_cost = int(damage_cost * 1.8)
 		update_ui()
@@ -184,6 +191,7 @@ func buy_max_health():
 		return
 	if money >= max_health_cost:
 		money -= max_health_cost
+		upgrades_bought += 1
 		max_health += 1
 		if not game_over:
 			health += 1
@@ -196,6 +204,7 @@ func buy_multishot():
 		return
 	if money >= multishot_cost:
 		money -= multishot_cost
+		upgrades_bought += 1
 		player.bullet_count += 1
 		multishot_cost = int(multishot_cost * 5)
 		update_ui()
@@ -214,6 +223,7 @@ func buy_repair():
 func buy_fire_rate():
 	if money >= fire_rate_cost:
 		money -= fire_rate_cost
+		upgrades_bought += 1
 		player.fire_delay = max(0.1, player.fire_delay * 0.85)
 		fire_rate_cost = int(fire_rate_cost * 2)
 		update_ui()
@@ -227,6 +237,9 @@ func play_sound(stream):
 	p.finished.connect(p.queue_free)
 	p.play()
 
+func get_level():
+	return wave + upgrades_bought * 0.5
+
 func save_game():
 	var data = {
 		"money": money,
@@ -239,7 +252,8 @@ func save_game():
 		"damage_cost": damage_cost,
 		"repair_cost": repair_cost,
 		"max_health": max_health,
-		"max_health_cost": max_health_cost
+		"max_health_cost": max_health_cost,
+		"upgrades_bought": upgrades_bought,
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -263,4 +277,5 @@ func load_game():
 	repair_cost = int(data.get("repair_cost", 15))
 	max_health = int(data.get("max_health", 5))
 	max_health_cost = int(data.get("max_health_cost", 30))
+	upgrades_bought = int(data.get("upgrades_bought", 0 ))
 	
