@@ -15,6 +15,7 @@ var wave_active = false
 var multishot_cost = 150
 var repair_cost = 40
 var max_health = 5
+var boss_spawned = false
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
 var damage_cost = 100
@@ -35,6 +36,7 @@ func _ready():
 	start_next_wave()
 
 func start_next_wave():
+	boss_spawned = false
 	wave += 1
 	to_spawn = 4 + wave * 2
 	wave_active = true
@@ -42,8 +44,25 @@ func start_next_wave():
 	spawn_timer.start()
 	update_ui()
 
+func spawn_boss():
+	var boss = asteroid_scene.instantiate()
+	boss.is_boss = true
+	boss.tint = Color(0.658, 0.144, 0.704, 1.0)
+	boss.size = 5.0
+	boss.health = 60 + wave * 8
+	boss.damage = 5
+	boss.speed = 40
+	boss.value = 50 + wave * 10
+	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
+	add_child(boss)
+	update_ui()
+
 func spawn_asteroid():
 	if game_over:
+		return
+	if wave % 5 == 0 and not boss_spawned:
+		boss_spawned = true
+		spawn_boss()
 		return
 	var asteroid = asteroid_scene.instantiate()
 	var screen = get_viewport_rect().size
@@ -54,20 +73,20 @@ func spawn_asteroid():
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 4.0
 		asteroid.health = 5 + wave * 0.7
-		asteroid.damage = 3 + (wave / 5)
+		asteroid.damage = 3 + floori(wave / 5.0)
 		asteroid.splits_left = 1
 		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 3.4
 			asteroid.health = 3 + wave * 0.6
-			asteroid.damage = 2 + (wave / 5)
+			asteroid.damage = 2 + floori(wave / 5.0)
 			asteroid.speed = 175 + wave * 12
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 2.5
 		asteroid.health = 1 + wave * 0.5
-		asteroid.damage = 1 + int(wave / 5)
+		asteroid.damage = 1 + floori(wave / 5.0)
 		asteroid.speed = 300 + wave * 22
 	asteroid.value = int((2 + wave * 0.2) * asteroid.size * asteroid.size)
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
@@ -76,7 +95,13 @@ func spawn_asteroid():
 	if to_spawn <= 0:
 		spawn_timer.stop()
 
-func _process(delta):
+
+func boss_reward():
+	health = min(max_health, health + 3)
+	update_ui()
+
+
+func _process(_delta):
 	if game_over or not wave_active:
 		return
 	if to_spawn <= 0 and get_tree().get_nodes_in_group("asteroids").size() == 0:
@@ -125,6 +150,8 @@ func update_ui():
 		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nBest wave: " + str(best_wave) + "\nMoney: " + str(money) + "\n" + get_shop_text() + "\n\nPress R to restart"
 	else:
 		var status = "Wave " + str(wave)
+		if wave % 5 == 0:
+			status += " BOSS IS COMING"
 		if not wave_active:
 			status += "\nWAVE CLEARED! Next wave is coming"
 		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money) + get_shop_text()

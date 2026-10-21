@@ -10,7 +10,7 @@ var splits_left = 0
 var drift = 0.0
 var start_health = 1
 var tint = Color.WHITE
-
+var is_boss = false
 
 
 func _ready():
@@ -37,8 +37,12 @@ func _on_area_entered(area):
 		take_hit(area.damage)
 	elif area.is_in_group("player"):
 		get_parent().take_damage(damage)
-		get_parent().add_money(int(value/2))
-		die(true)
+		if is_boss:
+			return
+		get_parent().add_money(int(value * 0.5))
+		get_parent().play_sound(get_parent().boom_sound)
+		die(false)
+
 
 func take_hit(amount):
 	health -= amount
@@ -71,6 +75,8 @@ func on_hit():
 
 func die(killed_by_player):
 	if killed_by_player:
+		if is_boss:
+			get_parent().boss_reward()
 		get_parent().add_money(value)
 		get_parent().play_sound(get_parent().boom_sound)
 	make_explosion()

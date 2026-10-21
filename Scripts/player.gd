@@ -14,7 +14,7 @@ func _ready():
 	global_position = get_viewport_rect().size / 2
 
 
-func _process(delta):
+func _process(_delta):
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		shoot()
 
