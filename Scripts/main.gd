@@ -54,22 +54,22 @@ func spawn_asteroid():
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 4.0
 		asteroid.health = 5 + wave * 0.7
-		asteroid.damage = 3
+		asteroid.damage = 3 + (wave / 5)
 		asteroid.splits_left = 1
 		asteroid.speed = 100 + wave * 11
 	elif roll < big_chance + medium_chance:
 			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 			asteroid.size = 3.4
 			asteroid.health = 3 + wave * 0.6
-			asteroid.damage = 2
+			asteroid.damage = 2 + (wave / 5)
 			asteroid.speed = 175 + wave * 12
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 2.5
 		asteroid.health = 1 + wave * 0.5
-		asteroid.damage = 1
+		asteroid.damage = 1 + int(wave / 5)
 		asteroid.speed = 300 + wave * 22
-	asteroid.value = int(2 * asteroid.size * asteroid.size)
+	asteroid.value = int((2 + wave * 0.2) * asteroid.size * asteroid.size)
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
 	to_spawn -= 1
@@ -170,7 +170,7 @@ func buy_multishot():
 	if money >= multishot_cost:
 		money -= multishot_cost
 		player.bullet_count += 1
-		multishot_cost = int(multishot_cost * 3)
+		multishot_cost = int(multishot_cost * 5)
 		update_ui()
 		save_game()
 
@@ -188,7 +188,7 @@ func buy_fire_rate():
 	if money >= fire_rate_cost:
 		money -= fire_rate_cost
 		player.fire_delay = max(0.1, player.fire_delay * 0.85)
-		fire_rate_cost = int(fire_rate_cost * 1.5)
+		fire_rate_cost = int(fire_rate_cost * 2)
 		update_ui()
 		save_game()
 
