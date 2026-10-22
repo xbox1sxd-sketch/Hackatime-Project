@@ -25,7 +25,7 @@ func _process(delta):
 	rotation += spin * delta
 	position.x = clamp(position.x + drift * delta, 30, get_viewport_rect().size.x - 30)
 	position.y += speed * delta
-	if position.y > 700:
+	if position.y > get_viewport_rect().size.y + 50:
 		get_parent().take_damage(damage)
 		queue_free()
 		
@@ -66,8 +66,8 @@ func split():
 		kid.value = max(1, int(value * 0.4))
 		kid.splits_left = splits_left - 1
 		kid.drift = -80 + i * 160
+		main.add_child(kid)
 		kid.position = position + Vector2(-25 + i * 50, 0)
-		main.call_deferred("add_child", kid)
 
 func on_hit():
 	modulate = Color(2, 2, 2)

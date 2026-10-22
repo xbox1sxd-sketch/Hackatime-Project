@@ -16,6 +16,13 @@ func _ready():
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	global_position = get_viewport_rect().size / 2
+	start_bomb_charge()
+
+func start_bomb_charge():
+	await get_tree().create_timer(bomb_cooldown).timeout
+	bomb_ready = true
+	get_parent().update_ui()
+
 
 
 func _process(_delta):
@@ -50,9 +57,9 @@ func use_bomb():
 			a.take_hit(dmg)
 	make_blast_ring()
 	get_parent().play_sound(get_parent().boom_sound)
-	await get_tree().create_timer(bomb_cooldown).timeout
-	bomb_ready = true
-	get_parent().update_ui()
+	start_bomb_charge()
+
+
 
 func make_blast_ring():
 	var ring = CPUParticles2D.new()
@@ -86,8 +93,8 @@ func shoot():
 		var bullet = bullet_scene.instantiate()
 		bullet.damage = bullet_damage
 		var offset = ( i - (bullet_count - 1)/ 2.0) * spread
+		get_parent().add_child(bullet)
 		bullet.global_position = global_position + Vector2(0, -40)
 		bullet.global_rotation = -PI / 2 + offset
-		get_parent().add_child(bullet)
 	await get_tree().create_timer(fire_delay).timeout
 	can_shoot = true

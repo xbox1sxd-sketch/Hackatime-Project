@@ -24,18 +24,8 @@ var max_health_cost = 120
 const save_path = "user://save.json"
 var upgrades_bought = 0
 var payout_scale = 0.5
+var wave_timer
 
-
-
-func _ready():
-	money_label.position = Vector2(20, 20)
-	money_label.add_theme_font_size_override("font_size", 28)
-	spawn_timer = Timer.new()
-	spawn_timer.timeout.connect(spawn_asteroid)
-	add_child(spawn_timer)
-	load_game()
-	health = max_health
-	start_next_wave()
 
 func start_next_wave():
 	boss_spawned = false
@@ -46,6 +36,20 @@ func start_next_wave():
 	spawn_timer.start()
 	update_ui()
 
+func _ready():
+	money_label.position = Vector2(20, 20)
+	money_label.add_theme_font_size_override("font_size", 28)
+	spawn_timer = Timer.new()
+	spawn_timer.timeout.connect(spawn_asteroid)
+	add_child(spawn_timer)
+	wave_timer = Timer.new()
+	wave_timer.one_shot = true
+	wave_timer.timeout.connect(start_next_wave)
+	add_child(wave_timer)
+	load_game()
+	start_next_wave()
+
+
 func spawn_boss():
 	var boss = asteroid_scene.instantiate()
 	boss.is_boss = true
@@ -55,8 +59,8 @@ func spawn_boss():
 	boss.damage = 5
 	boss.speed = 40
 	boss.value = 50 + wave * 10
-	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
 	add_child(boss)
+	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
 	update_ui()
 
 func spawn_asteroid():
@@ -65,6 +69,9 @@ func spawn_asteroid():
 	if wave % 5 == 0 and not boss_spawned:
 		boss_spawned = true
 		spawn_boss()
+		to_spawn -= 1
+		if to_spawn <= 0:
+			spawn_timer.stop()
 		return
 	var asteroid = asteroid_scene.instantiate()
 	var screen = get_viewport_rect().size
@@ -96,8 +103,8 @@ func spawn_asteroid():
 		asteroid.speed = 300 + level * 22
 		base_value = 2
 	asteroid.value = int(base_value * (1 + wave * 0.15))
-	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
+	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	to_spawn -= 1
 	if to_spawn <= 0:
 		spawn_timer.stop()
@@ -105,6 +112,7 @@ func spawn_asteroid():
 
 func boss_reward():
 	health = min(max_health, health + 3)
+	save_game()
 	update_ui()
 
 
@@ -116,9 +124,7 @@ func _process(_delta):
 		best_wave = max(best_wave, wave)
 		save_game()
 		update_ui()
-		await get_tree().create_timer(3.0).timeout
-		if not game_over:
-			start_next_wave()
+		wave_timer.start(3.0)
 
 func add_money(amount):
 	money += int(ceil(amount * payout_scale))
@@ -259,6 +265,7 @@ func save_game():
 		"max_health": max_health,
 		"max_health_cost": max_health_cost,
 		"upgrades_bought": upgrades_bought,
+		"health": health,
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -283,4 +290,5 @@ func load_game():
 	max_health = int(data.get("max_health", 5))
 	max_health_cost = int(data.get("max_health_cost", 30))
 	upgrades_bought = int(data.get("upgrades_bought", 0 ))
+	health = int(data.get("health", max_health))
 	
