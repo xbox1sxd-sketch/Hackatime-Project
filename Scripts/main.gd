@@ -161,6 +161,10 @@ func update_ui():
 			status += " BOSS IS COMING"
 		if not wave_active:
 			status += "\nWAVE CLEARED! Next wave is coming"
+		if player.bomb_ready:
+			status += "\nDA BOMB IS READY (PRESS RIGHT CLICK)"
+		else:
+			status += "\n bomb is recharging o-o"
 		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money) + get_shop_text()
 
 func _input(event):
