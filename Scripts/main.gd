@@ -23,6 +23,7 @@ var best_wave = 0
 var max_health_cost = 120
 const save_path = "user://save.json"
 var upgrades_bought = 0
+var payout_scale = 0.5
 
 
 
@@ -94,7 +95,7 @@ func spawn_asteroid():
 		asteroid.damage = 1 + floori(wave / 5.0)
 		asteroid.speed = 300 + level * 22
 		base_value = 2
-	asteroid.value = int((2 + wave * 0.2) * asteroid.size * asteroid.size)
+	asteroid.value = int(base_value * (1 + wave * 0.15))
 	asteroid.position = Vector2(randf_range(60, screen.x - 60), -60)
 	add_child(asteroid)
 	to_spawn -= 1
@@ -120,7 +121,7 @@ func _process(_delta):
 			start_next_wave()
 
 func add_money(amount):
-	money += amount 
+	money += int(ceil(amount * payout_scale))
 	update_ui()
 
 func take_damage(amount):
