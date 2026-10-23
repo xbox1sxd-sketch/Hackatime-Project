@@ -25,3 +25,6 @@ offset_bottom = 960.0
 texture = ExtResource("3_8gbba")
 expand_mode = 1
 stretch_mode = 6
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1820921662]
+anchor_mode = 0

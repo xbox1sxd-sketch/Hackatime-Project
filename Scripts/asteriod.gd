@@ -68,6 +68,7 @@ func split():
 		kid.drift = -80 + i * 160
 		main.add_child(kid)
 		kid.position = position + Vector2(-25 + i * 50, 0)
+		main.call_deferred("add_child", kid)
 
 func on_hit():
 	modulate = Color(2, 2, 2)

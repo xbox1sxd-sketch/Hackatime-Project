@@ -57,6 +57,7 @@ func use_bomb():
 			a.take_hit(dmg)
 	make_blast_ring()
 	get_parent().play_sound(get_parent().boom_sound)
+	get_parent().shake(25.0, 0.4)
 	start_bomb_charge()
 
 

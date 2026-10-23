@@ -6,7 +6,7 @@ var hurt_sound = preload("res://Assets/hurt.wav")
 var asteroid_scene = preload("res://Scenes/asteriod.tscn")
 var money = 0
 var fire_rate_cost = 60
-var health = 20
+var health = 5
 var game_over = false
 var spawn_timer
 var wave = 0
@@ -25,6 +25,7 @@ const save_path = "user://save.json"
 var upgrades_bought = 0
 var payout_scale = 0.5
 var wave_timer
+@onready var camera = $Camera2D
 
 
 func start_next_wave():
@@ -47,7 +48,19 @@ func _ready():
 	wave_timer.timeout.connect(start_next_wave)
 	add_child(wave_timer)
 	load_game()
+	if health <= 0:
+		health = max_health
 	start_next_wave()
+
+func shake(intensity = 10.0, duration = 0.2):
+	if not camera:
+		return
+	var tween = create_tween()
+	var steps = 10
+	for i in steps:
+		var rand_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		tween.tween_property(camera, "offset", rand_offset, duration /steps)
+	tween.tween_property(camera, "offset", Vector2.ZERO, duration / steps)
 
 
 func spawn_boss():
@@ -135,6 +148,7 @@ func take_damage(amount):
 		return
 	health -= amount
 	play_sound(hurt_sound)
+	shake(15.0, 0.3)
 	if health <= 0:
 		health = 0
 		game_over = true
@@ -278,6 +292,7 @@ func load_game():
 	var data = JSON.parse_string(file.get_as_text())
 	if data == null:
 		return
+	health = int(data.get("health", max_health))
 	money = int(data.get("money", 0))
 	best_wave = int(data.get("best_wave", 0))
 	player.fire_delay = float(data.get("fire_delay", 0.4))
@@ -290,5 +305,4 @@ func load_game():
 	max_health = int(data.get("max_health", 5))
 	max_health_cost = int(data.get("max_health_cost", 30))
 	upgrades_bought = int(data.get("upgrades_bought", 0 ))
-	health = int(data.get("health", max_health))
 	
