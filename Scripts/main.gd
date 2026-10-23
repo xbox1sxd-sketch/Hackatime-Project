@@ -1,5 +1,6 @@
 extends Node2D
 
+@onready var pause_menu = $CanvasLayer2/Pausemenu
 var shoot_sound = preload("res://Assets/shoot.wav")
 var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
@@ -41,17 +42,34 @@ func _ready():
 	money_label.position = Vector2(20, 20)
 	money_label.add_theme_font_size_override("font_size", 28)
 	spawn_timer = Timer.new()
+	spawn_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
 	spawn_timer.timeout.connect(spawn_asteroid)
 	add_child(spawn_timer)
+	
 	wave_timer = Timer.new()
 	wave_timer.one_shot = true
+	wave_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
 	wave_timer.timeout.connect(start_next_wave)
 	add_child(wave_timer)
+	
+	pause_menu.visible = false
+	$CanvasLayer2/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
+	$CanvasLayer2/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
+	$CanvasLayer2/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
 	load_game()
 	if health <= 0:
 		health = max_health
 	start_next_wave()
 
+
+func toggle_pause():
+	get_tree().paused = not get_tree().paused
+	pause_menu.visible = get_tree().paused
+	if get_tree().paused:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
 func shake(intensity = 10.0, duration = 0.2):
 	if not camera:
 		return
@@ -189,8 +207,13 @@ func update_ui():
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
+		if event.keycode ==  KEY_ESCAPE:
+				toggle_pause()
+				return
 		if event.keycode == KEY_R and game_over:
+			get_tree().paused = false
 			get_tree().reload_current_scene()
+			return
 		if event.keycode == KEY_1:
 			buy_fire_rate()
 		if event.keycode == KEY_2:

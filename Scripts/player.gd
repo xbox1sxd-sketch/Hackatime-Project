@@ -30,6 +30,7 @@ func _process(_delta):
 		shoot()
 
 func _input(event):
+	if get_tree().paused: return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		var screen = get_viewport_rect().size
 		global_position += event.relative
@@ -38,8 +39,6 @@ func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		use_bomb()
 
@@ -84,6 +83,8 @@ func make_blast_ring():
 		
 		
 func shoot():
+	if get_tree().paused:
+		return
 	if get_parent().game_over:
 		return
 	if not can_shoot:

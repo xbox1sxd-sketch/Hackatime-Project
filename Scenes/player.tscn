@@ -57,6 +57,7 @@ animations = [{
 }]
 
 [node name="Player" type="Area2D" unique_id=1044863816]
+process_mode = 1
 position = Vector2(576, 324)
 scale = Vector2(3, 3)
 script = ExtResource("1_cvnsp")
