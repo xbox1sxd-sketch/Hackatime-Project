@@ -11,7 +11,8 @@ var bomb_ready = false
 var bomb_cooldown = 12.0
 var bomb_radius = 300
 var bomb_damage = 6
-
+var crit_chance = 0.1
+var crit_multiplier = 2.0
 func _ready():
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

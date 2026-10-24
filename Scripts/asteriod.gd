@@ -64,10 +64,15 @@ func make_sparks(pos):
 	sparks.global_position = pos
 
 
-func show_damage_number(amount, pos):
+func show_damage_number(amount, is_crit):
 	var label = Label.new()
-	label.text = "-" + str(amount)
-	label.add_theme_font_size_override("font_size", 18)
+	if is_crit:
+		label.text = "-" + str(amount)
+		label.add_theme_font_size_override("font_size", 26)
+		label.add_theme_color_override("font_color", Color.ORANGE)
+	else:
+		label.text = "-" + str(amount)
+		label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", Color.YELLOW)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
 	label.add_theme_constant_override("outline_size", 4)
@@ -89,9 +94,12 @@ func show_damage_number(amount, pos):
 func take_hit(amount, hit_pos = null):
 	if health <= 0:
 		return
+	var is_crit = false
+	if randf() < get_parent().player.crit_chance:
+		amount = int(amount * get_parent().player.crit_multiplier)
+		is_crit = true
 	health -= amount
-	
-	show_damage_number(amount, hit_pos)
+	show_damage_number(amount, is_crit)
 	
 	if health <= 0:
 		split()
