@@ -64,25 +64,41 @@ func make_sparks(pos):
 	sparks.global_position = pos
 
 
-
-
-
-
-
-
-
+func show_damage_number(amount, pos):
+	var label = Label.new()
+	label.text = "-" + str(amount)
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", Color.YELLOW)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 4)
+	label.z_index = 100
+	get_parent().add_child(label)
+	var screen = get_viewport_rect().size
+	var offset_x = 40
+	if global_position.x > screen.x - 100:
+		offset_x = -40
+	label.global_position = global_position + Vector2(offset_x, randf_range(-15, 15))
+	var tween = label.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "global_position:x", label.global_position.x + (offset_x * 0.5), 0.3)
+	tween.tween_property(label, "modulate:a", 0.0, 0.3)
+	tween.chain().tween_callback(label.queue_free)
+	tween.finished.connect(label.queue_free)
 
 
 func take_hit(amount, hit_pos = null):
 	if health <= 0:
 		return
 	health -= amount
+	
+	show_damage_number(amount, hit_pos)
+	
 	if health <= 0:
 		split()
 		die(true)
 	else:
 		if hit_pos != null:
-				make_sparks(hit_pos)
+			make_sparks(hit_pos)
 		on_hit()
 
 func split():
@@ -99,7 +115,6 @@ func split():
 		kid.value = max(1, int(value * 0.4))
 		kid.splits_left = splits_left - 1
 		kid.drift = -80 + i * 160
-		main.add_child(kid)
 		kid.position = position + Vector2(-25 + i * 50, 0)
 		main.call_deferred("add_child", kid)
 
