@@ -79,9 +79,26 @@ func make_blast_ring():
 	get_parent().add_child(ring)
 		
 		
-		
-		
-		
+func make_muzzle_flash(pos):
+	var flash = CPUParticles2D.new()
+	flash.one_shot = true
+	flash.explosiveness = 1.0
+	flash.amount = 6
+	flash.lifetime = 0.15
+	flash.direction = Vector2(0, -1) 
+	flash.spread = 25
+	flash.gravity = Vector2.ZERO
+	flash.initial_velocity_min = 150
+	flash.initial_velocity_max = 250
+	flash.scale_amount_min = 2
+	flash.scale_amount_max = 4
+	flash.color = Color.CYAN
+	flash.emitting = true
+	flash.finished.connect(flash.queue_free)
+	get_parent().add_child(flash)
+	flash.global_position = pos
+	
+	
 func shoot():
 	if get_tree().paused:
 		return
@@ -91,6 +108,8 @@ func shoot():
 		return
 	can_shoot = false
 	get_parent().play_sound(get_parent().shoot_sound)
+	var muzzle_pos = global_position + Vector2(0,-40)
+	make_muzzle_flash(muzzle_pos)
 	for i in bullet_count:
 		var bullet = bullet_scene.instantiate()
 		bullet.damage = bullet_damage

@@ -277,6 +277,15 @@ func buy_fire_rate():
 		update_ui()
 		save_game()
 
+
+	
+	
+	
+	
+	
+	
+	
+	
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
 	p.volume_db = -8

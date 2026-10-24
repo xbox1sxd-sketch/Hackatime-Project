@@ -33,8 +33,9 @@ func _on_area_entered(area):
 	if is_queued_for_deletion():
 		return
 	if area.is_in_group("bullets"):
+		var hit_pos = area.global_position
 		area.queue_free()
-		take_hit(area.damage)
+		take_hit(area.damage, hit_pos)
 	elif area.is_in_group("player"):
 		get_parent().take_damage(damage)
 		if is_boss:
@@ -44,12 +45,44 @@ func _on_area_entered(area):
 		die(false)
 
 
-func take_hit(amount):
+func make_sparks(pos):
+	var sparks = CPUParticles2D.new()
+	sparks.one_shot = true
+	sparks.explosiveness = 1.0
+	sparks.amount = 8
+	sparks.lifetime = 0.2
+	sparks.spread = 180
+	sparks.gravity = Vector2.ZERO
+	sparks.initial_velocity_min = 80
+	sparks.initial_velocity_max = 160
+	sparks.scale_amount_min = 1
+	sparks.scale_amount_max = 2.5
+	sparks.color = Color.WHITE
+	sparks.emitting = true
+	sparks.finished.connect(sparks.queue_free)
+	get_parent().add_child(sparks)
+	sparks.global_position = pos
+
+
+
+
+
+
+
+
+
+
+
+func take_hit(amount, hit_pos = null):
+	if health <= 0:
+		return
 	health -= amount
 	if health <= 0:
 		split()
 		die(true)
 	else:
+		if hit_pos != null:
+				make_sparks(hit_pos)
 		on_hit()
 
 func split():
