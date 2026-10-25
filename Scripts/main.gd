@@ -1,4 +1,5 @@
 extends Node2D
+@onready var upgrade_sound = $CanvasLayer/UpgradeSound
 @onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/FireRate
 @onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MultiShot
 @onready var repair = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Repair
@@ -36,6 +37,8 @@ var crit_chance_cost = 200
 @onready var upgrade_panel = $CanvasLayer/PanelContainer
 @onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
 @onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Prestige
+@onready var ui_sound = $CanvasLayer/UISound
+
 var menu_open = false
 var prestige_level = 0
 
@@ -49,7 +52,18 @@ func start_next_wave():
 	spawn_timer.start()
 	update_ui()
 
+func play_ui_sound():
+	ui_sound.play()
+
+func play_upgrade_sound():
+	upgrade_sound.play()
+
 func _ready():
+	for button in find_children("*", "Button"):
+		if upgrade_panel.is_ancestor_of(button) and button.name != "Closeshop":
+			button.pressed.connect(play_upgrade_sound)
+		else:
+			button.pressed.connect(play_ui_sound)
 	prestige.pressed.connect(do_prestige)
 	money_label.position = Vector2(20, 20)
 	money_label.add_theme_font_size_override("font_size", 28)
@@ -179,7 +193,7 @@ func _process(_delta):
 
 func add_money(amount):
 	var multiplier = 1.0 + (prestige_level * 0.1)
-	money += int(ceil(amount * payout_scale))
+	money += int(ceil(amount * payout_scale * multiplier))
 	update_ui()
 
 func take_damage(amount):
