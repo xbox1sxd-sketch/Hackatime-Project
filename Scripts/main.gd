@@ -1,6 +1,11 @@
 extends Node2D
-
-@onready var pause_menu = $CanvasLayer2/Pausemenu
+@onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/FireRate
+@onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MultiShot
+@onready var repair = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Repair
+@onready var damage = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Damage
+@onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MaxHealth
+@onready var crit = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Crit
+@onready var pause_menu = $CanvasLayer/Pausemenu
 var shoot_sound = preload("res://Assets/shoot.wav")
 var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
@@ -26,7 +31,12 @@ const save_path = "user://save.json"
 var upgrades_bought = 0
 var payout_scale = 0.5
 var wave_timer
+var crit_chance_cost = 200
 @onready var camera = $Camera2D
+@onready var upgrade_panel = $CanvasLayer/PanelContainer
+@onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
+var menu_open = false
+
 
 
 func start_next_wave():
@@ -53,14 +63,19 @@ func _ready():
 	add_child(wave_timer)
 	
 	pause_menu.visible = false
-	$CanvasLayer2/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
-	$CanvasLayer2/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
-	$CanvasLayer2/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
+	$CanvasLayer/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
+	$CanvasLayer/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
+	$CanvasLayer/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
+	firerate.pressed.connect(buy_fire_rate)
+	multishot.pressed.connect(buy_multishot)
+	repair.pressed.connect(buy_repair)
+	damage.pressed.connect(buy_damage)
+	maxhealth.pressed.connect(buy_max_health)
+	crit.pressed.connect(buy_crit_chance)
 	load_game()
 	if health <= 0:
 		health = max_health
 	start_next_wave()
-
 
 func toggle_pause():
 	get_tree().paused = not get_tree().paused
@@ -79,7 +94,6 @@ func shake(intensity = 10.0, duration = 0.2):
 		var rand_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
 		tween.tween_property(camera, "offset", rand_offset, duration /steps)
 	tween.tween_property(camera, "offset", Vector2.ZERO, duration / steps)
-
 
 func spawn_boss():
 	var boss = asteroid_scene.instantiate()
@@ -140,12 +154,10 @@ func spawn_asteroid():
 	if to_spawn <= 0:
 		spawn_timer.stop()
 
-
 func boss_reward():
 	health = min(max_health, health + 3)
 	save_game()
 	update_ui()
-
 
 func _process(_delta):
 	if game_over or not wave_active:
@@ -175,24 +187,9 @@ func take_damage(amount):
 		save_game()
 	update_ui()
 
-func get_shop_text():
-	var shop = "\n[1] Faster fire (" + str(fire_rate_cost) + ")"
-	if player.bullet_count < 5:
-		shop += "\n[2] Multi-shot (" + str(multishot_cost) + ")"
-	else:
-		shop += "\n[2] Multi-shot is MAX"
-	if not game_over:
-		shop += "\n[3] Repair +1 (" + str(repair_cost) + ")"
-	shop += "\n[4] Damage +1 (" + str(damage_cost) + ")"
-	if max_health < 15:
-		shop += "\n[5] Max health +1 (" + str(max_health_cost) + ")"
-	else:
-		shop += "\n[5] Max health is MAX"
-	return shop
-
 func update_ui():
 	if game_over:
-		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nBest wave: " + str(best_wave) + "\nMoney: " + str(money) + "\n" + get_shop_text() + "\n\nPress R to restart"
+		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nBest wave: " + str(best_wave) + "\nMoney: " + str(money) + "\n" + "\n\nPress R to restart"
 	else:
 		var status = "Wave " + str(wave)
 		if wave % 5 == 0:
@@ -203,27 +200,64 @@ func update_ui():
 			status += "\nDA BOMB IS READY (PRESS RIGHT CLICK)"
 		else:
 			status += "\n bomb is recharging o-o"
-		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money) + get_shop_text()
+		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
+		
+		firerate.text = "faster fire\n" + str(fire_rate_cost)
+		firerate.disabled = money < fire_rate_cost
+		
+		if player.bullet_count < 5:
+			multishot.text = "multishot\n$" + str(multishot_cost)
+			multishot.disabled = money < multishot_cost
+		else: 
+			multishot.text = "multishot is MAX"
+			multishot.disabled = true
+		
+		if health < max_health and not game_over:
+			repair.text = "Repair +1\n$" + str(repair_cost)
+			repair.disabled = money < repair_cost
+		else:
+			repair.text = "health full"
+			repair.disabled = true
+
+		damage.text = "damage +1\n$" + str(damage_cost)
+		damage.disabled = money < damage_cost
+
+		if max_health < 15:
+			maxhealth.text = "max Health +1\n$" + str(max_health_cost)
+			maxhealth.disabled = money < max_health_cost
+		else:
+			maxhealth.text = "max health is MAX"
+			maxhealth.disabled = true
+
+		if player.crit_chance < 0.5:
+			crit.text = "crit +5%\n$" + str(crit_chance_cost)
+			crit.disabled = money < crit_chance_cost
+		else:
+			crit.text = "crit chance max"
+			crit.disabled = true
+
+func toggle_upgrade_menu():
+	menu_open = not menu_open
+	upgrade_panel.visible = menu_open
+	upgrade_prompt.visible = not menu_open
+	get_tree().paused = menu_open
+	if menu_open:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode ==  KEY_ESCAPE:
 				toggle_pause()
 				return
+		if event.keycode == KEY_M:
+			toggle_upgrade_menu()
+			return
 		if event.keycode == KEY_R and game_over:
 			get_tree().paused = false
 			get_tree().reload_current_scene()
 			return
-		if event.keycode == KEY_1:
-			buy_fire_rate()
-		if event.keycode == KEY_2:
-			buy_multishot()
-		if event.keycode == KEY_3 and not game_over:
-			buy_repair()
-		if event.keycode == KEY_4:
-			buy_damage()
-		if event.keycode == KEY_5:
-			buy_max_health()
 
 func buy_damage():
 	if money >= damage_cost:
@@ -244,6 +278,17 @@ func buy_max_health():
 		if not game_over:
 			health += 1
 		max_health_cost = int(max_health_cost * 1.6)
+		update_ui()
+		save_game()
+
+func buy_crit_chance():
+	if player.crit_chance >= 0.5:
+		return
+	if money >= crit_chance_cost:
+		money -= crit_chance_cost
+		upgrades_bought += 1
+		player.crit_chance += 0.05
+		crit_chance_cost = int(crit_chance_cost * 2.0)
 		update_ui()
 		save_game()
 
@@ -277,15 +322,6 @@ func buy_fire_rate():
 		update_ui()
 		save_game()
 
-
-	
-	
-	
-	
-	
-	
-	
-	
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
 	p.volume_db = -8
@@ -312,11 +348,13 @@ func save_game():
 		"max_health_cost": max_health_cost,
 		"upgrades_bought": upgrades_bought,
 		"health": health,
+		"crit_chance": player.crit_chance,
+		"crit_chance_cost": crit_chance_cost,
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
-	
+
 func load_game():
 	if not FileAccess.file_exists(save_path):
 		return
@@ -337,4 +375,5 @@ func load_game():
 	max_health = int(data.get("max_health", 5))
 	max_health_cost = int(data.get("max_health_cost", 30))
 	upgrades_bought = int(data.get("upgrades_bought", 0 ))
-	
+	player.crit_chance = float(data.get("crit_chance", 0.1))
+	crit_chance_cost = int(data.get("crit_chance_cost", 200))

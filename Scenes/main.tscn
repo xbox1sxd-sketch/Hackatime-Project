@@ -11,10 +11,107 @@ script = ExtResource("1_bo1nx")
 [node name="Player" parent="." unique_id=1828675205 instance=ExtResource("1_jjgbg")]
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=404431334]
+process_mode = 3
 
 [node name="MoneyLabel" type="Label" parent="CanvasLayer" unique_id=1407020922]
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="Pausemenu" type="Control" parent="CanvasLayer" unique_id=1792250218]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Pausemenu" unique_id=65975586]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0.003921569, 0.003921569, 0.8)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Pausemenu" unique_id=531759691]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Pausemenu/VBoxContainer" unique_id=298924715]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "PAUSED"
+
+[node name="Resume" type="Button" parent="CanvasLayer/Pausemenu/VBoxContainer" unique_id=1803975926]
+layout_mode = 2
+text = "Resume"
+
+[node name="Restart" type="Button" parent="CanvasLayer/Pausemenu/VBoxContainer" unique_id=1723630523]
+layout_mode = 2
+text = "Restart"
+
+[node name="Quit" type="Button" parent="CanvasLayer/Pausemenu/VBoxContainer" unique_id=560954735]
+layout_mode = 2
+text = "Quit"
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1346140554]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/PanelContainer" unique_id=176794765]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=521746888]
+layout_mode = 2
+
+[node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=966963763]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="MultiShot" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=252264017]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="Repair" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=565034022]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="Damage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=2028639491]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="MaxHealth" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=556165544]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="Crit" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=8218040]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
+offset_left = 947.0
+offset_top = 4.0
+offset_right = 1148.0
+offset_bottom = 27.0
+text = "Press M to open upgrades"
 
 [node name="backround" type="CanvasLayer" parent="." unique_id=778519386]
 layer = -1
@@ -29,55 +126,3 @@ stretch_mode = 6
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1820921662]
 anchor_mode = 0
-
-[node name="CanvasLayer2" type="CanvasLayer" parent="." unique_id=1174683230]
-
-[node name="Pausemenu" type="Control" parent="CanvasLayer2" unique_id=1792250218]
-process_mode = 3
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer2/Pausemenu" unique_id=65975586]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0.003921569, 0.003921569, 0.8)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer2/Pausemenu" unique_id=531759691]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="CanvasLayer2/Pausemenu/VBoxContainer" unique_id=298924715]
-layout_mode = 2
-theme_override_font_sizes/font_size = 48
-text = "PAUSED"
-
-[node name="Resume" type="Button" parent="CanvasLayer2/Pausemenu/VBoxContainer" unique_id=1803975926]
-layout_mode = 2
-text = "Resume"
-
-[node name="Restart" type="Button" parent="CanvasLayer2/Pausemenu/VBoxContainer" unique_id=1723630523]
-layout_mode = 2
-text = "Restart"
-
-[node name="Quit" type="Button" parent="CanvasLayer2/Pausemenu/VBoxContainer" unique_id=560954735]
-layout_mode = 2
-text = "Quit"

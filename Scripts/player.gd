@@ -13,6 +13,9 @@ var bomb_radius = 300
 var bomb_damage = 6
 var crit_chance = 0.1
 var crit_multiplier = 2.0
+
+
+
 func _ready():
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -27,6 +30,7 @@ func start_bomb_charge():
 
 
 func _process(_delta):
+	if get_parent().menu_open: return
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		shoot()
 
@@ -38,7 +42,7 @@ func _input(event):
 		global_position.x = clamp(global_position.x, margin, screen.x - margin)
 		global_position.y = clamp(global_position.y, margin, screen.y - margin)
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not get_parent().menu_open:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		use_bomb()
@@ -101,6 +105,7 @@ func make_muzzle_flash(pos):
 	
 	
 func shoot():
+	if get_tree().paused: return
 	if get_tree().paused:
 		return
 	if get_parent().game_over:
