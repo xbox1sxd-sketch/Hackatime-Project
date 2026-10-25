@@ -165,5 +165,22 @@ volume_db = -5.0
 [node name="UpgradeSound" type="AudioStreamPlayer2D" parent="CanvasLayer" unique_id=285296737]
 stream = ExtResource("7_6bp64")
 
+[node name="BossHealthBar" type="ProgressBar" parent="CanvasLayer" unique_id=1688529416]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 50.0
+grow_horizontal = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/BossHealthBar" unique_id=1019531306]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "BOSS"
+
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1820921662]
 anchor_mode = 0

@@ -98,6 +98,8 @@ func take_hit(amount, hit_pos = null):
 		amount = int(amount * get_parent().player.crit_multiplier)
 		is_crit = true
 	health -= amount
+	if is_boss:
+		get_parent().update_boss_health(health)
 	show_damage_number(amount, is_crit)
 	
 	if health <= 0:

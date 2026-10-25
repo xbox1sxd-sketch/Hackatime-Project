@@ -7,6 +7,14 @@ extends Node2D
 @onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MaxHealth
 @onready var crit = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Crit
 @onready var pause_menu = $CanvasLayer/Pausemenu
+@onready var camera = $Camera2D
+@onready var upgrade_panel = $CanvasLayer/PanelContainer
+@onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
+@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Prestige
+@onready var ui_sound = $CanvasLayer/UISound
+@onready var money_label = $CanvasLayer/MoneyLabel
+@onready var player = $Player
+@onready var boss_health_bar = $CanvasLayer/BossHealthBar
 var shoot_sound = preload("res://Assets/shoot.wav")
 var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
@@ -23,8 +31,6 @@ var multishot_cost = 150
 var repair_cost = 40
 var max_health = 5
 var boss_spawned = false
-@onready var money_label = $CanvasLayer/MoneyLabel
-@onready var player = $Player
 var damage_cost = 100
 var best_wave = 0
 var max_health_cost = 120
@@ -33,12 +39,6 @@ var upgrades_bought = 0
 var payout_scale = 0.5
 var wave_timer
 var crit_chance_cost = 200
-@onready var camera = $Camera2D
-@onready var upgrade_panel = $CanvasLayer/PanelContainer
-@onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
-@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Prestige
-@onready var ui_sound = $CanvasLayer/UISound
-
 var menu_open = false
 var prestige_level = 0
 
@@ -117,6 +117,11 @@ func shake(intensity = 10.0, duration = 0.2):
 		tween.tween_property(camera, "offset", rand_offset, duration /steps)
 	tween.tween_property(camera, "offset", Vector2.ZERO, duration / steps)
 
+func update_boss_health(new_health):
+	boss_health_bar.value = new_health
+	if new_health <= 0:
+		boss_health_bar.visible = false
+
 func spawn_boss():
 	var boss = asteroid_scene.instantiate()
 	boss.is_boss = true
@@ -128,6 +133,9 @@ func spawn_boss():
 	boss.value = 50 + wave * 10
 	add_child(boss)
 	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
+	boss_health_bar.visible = true
+	boss_health_bar.max_value = boss.health
+	boss_health_bar.vlue = boss.health
 	update_ui()
 
 func spawn_asteroid():
