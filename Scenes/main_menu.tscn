@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://7qxid2udgqud"]
+
+[ext_resource type="Script" uid="uid://cqv7s5c4u87tj" path="res://Scripts/main_menu.gd" id="1_28flt"]
+
+[node name="MainMenu" type="Control" unique_id=1713915824]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_28flt")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=150754975]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.21568628, 0.25882354, 0.35686275, 1)
+
+[node name="Label" type="Label" parent="." unique_id=1963863817]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -544.0
+offset_top = -256.0
+offset_right = 538.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 64
+text = "INCREMENTAL ASTEROID SHOOTER"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1298294745]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Play" type="Button" parent="VBoxContainer" unique_id=1047940572]
+layout_mode = 2
+text = "Play"
+autowrap_trim_flags = 0
+
+[node name="Quit" type="Button" parent="VBoxContainer" unique_id=449005511]
+layout_mode = 2
+text = "Quit (now why would you want to do that?)"
+autowrap_trim_flags = 0
+
+[node name="Reset" type="Button" parent="VBoxContainer" unique_id=202622282]
+layout_mode = 2
+text = "Reset Data"
+autowrap_trim_flags = 0
+
+[node name="Label2" type="Label" parent="." unique_id=1918664443]
+layout_mode = 0
+offset_left = 407.0
+offset_top = 576.0
+offset_right = 747.0
+offset_bottom = 599.0
+theme_override_font_sizes/font_size = 16
+text = "Semi-inspired by space rock breaker ( great game)"
+autowrap_trim_flags = 0
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1316111507]
+dialog_text = "WARNING THIS WILL DELETE YOUR WHOLE PLAYTHROUGH."

@@ -87,7 +87,6 @@ func show_damage_number(amount, is_crit):
 	tween.set_parallel(true)
 	tween.tween_property(label, "global_position:x", label.global_position.x + (offset_x * 0.5), 0.3)
 	tween.tween_property(label, "modulate:a", 0.0, 0.3)
-	tween.chain().tween_callback(label.queue_free)
 	tween.finished.connect(label.queue_free)
 
 
