@@ -2,7 +2,9 @@
 
 [ext_resource type="Script" uid="uid://c2tq2qtoxhucr" path="res://Scripts/main.gd" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://q5ewrrojbrhf" path="res://Scenes/player.tscn" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://dugc8d2jhhkmh" path="res://Scripts/texturerect1.gd" id="2_jjvhh"]
 [ext_resource type="Texture2D" uid="uid://26oskyli50af" path="res://Assets/spr_background_space.png" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://c281krh1fo5if" path="res://Scripts/texturerect2.gd" id="3_kry3j"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjvhh"]
 bg_color = Color(0.15768081, 0.6858934, 0.64656234, 1)
@@ -10,6 +12,21 @@ bg_color = Color(0.15768081, 0.6858934, 0.64656234, 1)
 [node name="Main" type="Node2D" unique_id=1246735731]
 process_mode = 3
 script = ExtResource("1_bo1nx")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1184467824]
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = ExtResource("3_8gbba")
+expand_mode = 1
+script = ExtResource("2_jjvhh")
+
+[node name="TextureRect2" type="TextureRect" parent="." unique_id=960165657]
+offset_top = -648.0
+offset_right = 1152.0
+texture = ExtResource("3_8gbba")
+expand_mode = 1
+flip_v = true
+script = ExtResource("3_kry3j")
 
 [node name="Player" parent="." unique_id=1828675205 instance=ExtResource("1_jjgbg")]
 
@@ -133,17 +150,6 @@ offset_right = 1214.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 26
 text = "Press M to open upgrades"
-
-[node name="backround" type="CanvasLayer" parent="." unique_id=778519386]
-layer = -1
-
-[node name="TextureRect" type="TextureRect" parent="backround" unique_id=1184027322]
-offset_left = 6.0
-offset_right = 1151.0
-offset_bottom = 960.0
-texture = ExtResource("3_8gbba")
-expand_mode = 1
-stretch_mode = 6
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1820921662]
 anchor_mode = 0
