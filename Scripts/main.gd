@@ -135,7 +135,7 @@ func spawn_boss():
 	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
 	boss_health_bar.visible = true
 	boss_health_bar.max_value = boss.health
-	boss_health_bar.vlue = boss.health
+	boss_health_bar.value = boss.health
 	update_ui()
 
 func spawn_asteroid():

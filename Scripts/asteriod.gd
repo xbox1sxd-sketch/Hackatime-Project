@@ -97,6 +97,9 @@ func take_hit(amount, hit_pos = null):
 	if randf() < get_parent().player.crit_chance:
 		amount = int(amount * get_parent().player.crit_multiplier)
 		is_crit = true
+		Engine.time_scale = 0.05
+		var t = create_tween().set_ignore_time_scale(true)
+		t.tween_property(Engine, "time_scale", 1.0, 0.05)
 	health -= amount
 	if is_boss:
 		get_parent().update_boss_health(health)
