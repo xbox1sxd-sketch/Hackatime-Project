@@ -143,6 +143,10 @@ theme_override_font_sizes/font_size = 32
 text = "Close shop (M)
 "
 
+[node name="Prestige" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1340694388]
+layout_mode = 2
+text = "prestige(wave 20 required."
+
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
 offset_left = 823.0
 offset_top = 2.0

@@ -36,7 +36,7 @@ var crit_chance_cost = 200
 @onready var upgrade_panel = $CanvasLayer/PanelContainer
 @onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
 var menu_open = false
-
+var prestige_level = 0
 
 
 func start_next_wave():
