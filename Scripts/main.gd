@@ -35,6 +35,7 @@ var crit_chance_cost = 200
 @onready var camera = $Camera2D
 @onready var upgrade_panel = $CanvasLayer/PanelContainer
 @onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
+@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Prestige
 var menu_open = false
 var prestige_level = 0
 
@@ -49,6 +50,7 @@ func start_next_wave():
 	update_ui()
 
 func _ready():
+	prestige.pressed.connect(do_prestige)
 	money_label.position = Vector2(20, 20)
 	money_label.add_theme_font_size_override("font_size", 28)
 	spawn_timer = Timer.new()
@@ -176,6 +178,7 @@ func _process(_delta):
 		wave_timer.start(3.0)
 
 func add_money(amount):
+	var multiplier = 1.0 + (prestige_level * 0.1)
 	money += int(ceil(amount * payout_scale))
 	update_ui()
 
@@ -241,6 +244,15 @@ func update_ui():
 		else:
 			crit.text = "Crit Chance Max"
 			crit.disabled = true
+		if wave >= 20:
+			prestige.text = "PRESTIGE (reset for 10% more money)\nLevel: " + str(prestige_level)
+			prestige.disabled = false
+		else:
+			prestige.text = "PRESTIGE unlocks at Wave 20!\nLevel: " + str(prestige_level)
+			prestige.disabled = true
+
+
+
 
 func toggle_upgrade_menu():
 	menu_open = not menu_open
@@ -343,6 +355,31 @@ func play_sound(stream):
 func get_level():
 	return wave + upgrades_bought * 0.5
 
+func do_prestige():
+	if wave < 20:
+		return
+	prestige_level += 1
+	money = 0
+	health = 5
+	max_health = 5
+	upgrades_bought = 0
+	wave = 0
+	player.fire_delay = 0.4
+	player.bullet_count = 1
+	player.bullet_damage = 2
+	player.crit_chance = 0.1
+	fire_rate_cost = 60
+	multishot_cost = 150
+	repair_cost = 40
+	damage_cost = 100
+	max_health_cost = 120
+	crit_chance_cost = 200
+	toggle_upgrade_menu()
+	save_game()
+	start_next_wave()
+
+
+# not sure if mentioned, but ai was used in the assitance of creating the below function
 func save_game():
 	var data = {
 		"money": money,
@@ -360,11 +397,12 @@ func save_game():
 		"health": health,
 		"crit_chance": player.crit_chance,
 		"crit_chance_cost": crit_chance_cost,
+		"prestige_level": prestige_level,
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
-
+# not sure if mentioned, but ai was used in the assitance of creating the below function
 func load_game():
 	if not FileAccess.file_exists(save_path):
 		return
@@ -387,3 +425,4 @@ func load_game():
 	upgrades_bought = int(data.get("upgrades_bought", 0 ))
 	player.crit_chance = float(data.get("crit_chance", 0.1))
 	crit_chance_cost = int(data.get("crit_chance_cost", 200))
+	prestige_level = int(data.get("prestige_level", 0))
