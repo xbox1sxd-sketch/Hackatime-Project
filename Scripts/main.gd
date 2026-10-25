@@ -86,9 +86,11 @@ func toggle_pause():
 	pause_menu.visible = get_tree().paused
 	if get_tree().paused:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		upgrade_prompt.visible = false
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
+		upgrade_prompt.visible = true
+
 func shake(intensity = 10.0, duration = 0.2):
 	if not camera:
 		return
@@ -206,7 +208,7 @@ func update_ui():
 			status += "\n bomb is recharging o-o"
 		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
 		
-		firerate.text = "Faster Fire\n" + str(fire_rate_cost)
+		firerate.text = "Faster Fire\n$" + str(fire_rate_cost)
 		firerate.disabled = money < fire_rate_cost
 		
 		if player.bullet_count < 5:
