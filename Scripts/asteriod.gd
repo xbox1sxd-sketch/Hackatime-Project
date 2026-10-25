@@ -83,7 +83,7 @@ func show_damage_number(amount, is_crit):
 	if global_position.x > screen.x - 100:
 		offset_x = -40
 	label.global_position = global_position + Vector2(offset_x, randf_range(-15, 15))
-	var tween = label.create_tween()
+	var tween = label.create_tween().set_ignore_time_scale(true)
 	tween.set_parallel(true)
 	tween.tween_property(label, "global_position:x", label.global_position.x + (offset_x * 0.5), 0.3)
 	tween.tween_property(label, "modulate:a", 0.0, 0.3)
@@ -98,7 +98,7 @@ func take_hit(amount, hit_pos = null):
 		amount = int(amount * get_parent().player.crit_multiplier)
 		is_crit = true
 		Engine.time_scale = 0.05
-		var t = create_tween().set_ignore_time_scale(true)
+		var t = get_tree().create_tween().set_ignore_time_scale(true)
 		t.tween_property(Engine, "time_scale", 1.0, 0.05)
 	health -= amount
 	if is_boss:

@@ -267,10 +267,10 @@ func update_ui():
 			crit.text = "Crit Chance Max"
 			crit.disabled = true
 		if wave >= 20:
-			prestige.text = "PRESTIGE (reset for 10% more money)\nLevel: " + str(prestige_level)
+			prestige.text = "PRESTIGE (10% Money)\nLevel: " + str(prestige_level)
 			prestige.disabled = false
 		else:
-			prestige.text = "PRESTIGE unlocks at Wave 20!\nLevel: " + str(prestige_level)
+			prestige.text = "LOCKED (Wave 20)\nLevel: " + str(prestige_level)
 			prestige.disabled = true
 
 

@@ -23,7 +23,7 @@ func _ready():
 	start_bomb_charge()
 
 func start_bomb_charge():
-	await get_tree().create_timer(bomb_cooldown).timeout
+	await get_tree().create_timer(bomb_cooldown, true, false, true).timeout
 	bomb_ready = true
 	get_parent().update_ui()
 
@@ -122,5 +122,5 @@ func shoot():
 		get_parent().add_child(bullet)
 		bullet.global_position = global_position + Vector2(0, -40)
 		bullet.global_rotation = -PI / 2 + offset
-	await get_tree().create_timer(fire_delay).timeout
+	await get_tree().create_timer(fire_delay, true, false, true).timeout
 	can_shoot = true
