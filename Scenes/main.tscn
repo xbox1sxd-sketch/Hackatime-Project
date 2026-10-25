@@ -67,6 +67,10 @@ text = "Restart"
 layout_mode = 2
 text = "Quit"
 
+[node name="Close" type="Button" parent="CanvasLayer/Pausemenu/VBoxContainer" unique_id=501216424]
+layout_mode = 2
+text = "Close"
+
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1346140554]
 visible = false
 anchors_preset = 15
@@ -84,33 +88,46 @@ layout_mode = 2
 
 [node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=966963763]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
 [node name="MultiShot" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=252264017]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
 [node name="Repair" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=565034022]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
 [node name="Damage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=2028639491]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
 [node name="MaxHealth" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=556165544]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
 [node name="Crit" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=8218040]
 layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Upgrade"
 
+[node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1698430788]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Close shop (M)
+"
+
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
-offset_left = 947.0
-offset_top = 4.0
-offset_right = 1148.0
-offset_bottom = 27.0
+offset_left = 823.0
+offset_top = 2.0
+offset_right = 1214.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 26
 text = "Press M to open upgrades"
 
 [node name="backround" type="CanvasLayer" parent="." unique_id=778519386]

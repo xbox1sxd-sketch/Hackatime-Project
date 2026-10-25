@@ -63,9 +63,13 @@ func _ready():
 	add_child(wave_timer)
 	
 	pause_menu.visible = false
+	upgrade_panel.visible = false
+	upgrade_prompt.visible = true
+	$CanvasLayer/Pausemenu/VBoxContainer/Close.pressed.connect(toggle_pause)
 	$CanvasLayer/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
 	$CanvasLayer/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
 	$CanvasLayer/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
+	$CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
 	firerate.pressed.connect(buy_fire_rate)
 	multishot.pressed.connect(buy_multishot)
 	repair.pressed.connect(buy_repair)
@@ -202,38 +206,38 @@ func update_ui():
 			status += "\n bomb is recharging o-o"
 		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
 		
-		firerate.text = "faster fire\n" + str(fire_rate_cost)
+		firerate.text = "Faster Fire\n" + str(fire_rate_cost)
 		firerate.disabled = money < fire_rate_cost
 		
 		if player.bullet_count < 5:
-			multishot.text = "multishot\n$" + str(multishot_cost)
+			multishot.text = "Multishot\n$" + str(multishot_cost)
 			multishot.disabled = money < multishot_cost
 		else: 
-			multishot.text = "multishot is MAX"
+			multishot.text = "Multishot Is MAX"
 			multishot.disabled = true
 		
 		if health < max_health and not game_over:
 			repair.text = "Repair +1\n$" + str(repair_cost)
 			repair.disabled = money < repair_cost
 		else:
-			repair.text = "health full"
+			repair.text = "Health Full"
 			repair.disabled = true
 
-		damage.text = "damage +1\n$" + str(damage_cost)
+		damage.text = "Damage +1\n$" + str(damage_cost)
 		damage.disabled = money < damage_cost
 
 		if max_health < 15:
-			maxhealth.text = "max Health +1\n$" + str(max_health_cost)
+			maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
 			maxhealth.disabled = money < max_health_cost
 		else:
-			maxhealth.text = "max health is MAX"
+			maxhealth.text = "Max Health is MAX"
 			maxhealth.disabled = true
 
 		if player.crit_chance < 0.5:
-			crit.text = "crit +5%\n$" + str(crit_chance_cost)
+			crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
 			crit.disabled = money < crit_chance_cost
 		else:
-			crit.text = "crit chance max"
+			crit.text = "Crit Chance Max"
 			crit.disabled = true
 
 func toggle_upgrade_menu():
@@ -249,10 +253,14 @@ func toggle_upgrade_menu():
 func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode ==  KEY_ESCAPE:
+			if menu_open:
+				toggle_upgrade_menu()
+			else:
 				toggle_pause()
-				return
+			return
 		if event.keycode == KEY_M:
-			toggle_upgrade_menu()
+			if not get_tree().paused or menu_open:
+				toggle_upgrade_menu()
 			return
 		if event.keycode == KEY_R and game_over:
 			get_tree().paused = false

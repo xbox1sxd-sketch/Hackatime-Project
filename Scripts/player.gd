@@ -105,7 +105,6 @@ func make_muzzle_flash(pos):
 	
 	
 func shoot():
-	if get_tree().paused: return
 	if get_tree().paused:
 		return
 	if get_parent().game_over:
