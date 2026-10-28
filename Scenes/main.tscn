@@ -41,7 +41,6 @@ offset_bottom = 23.0
 
 [node name="Pausemenu" type="Control" parent="CanvasLayer" unique_id=1792250218]
 process_mode = 3
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

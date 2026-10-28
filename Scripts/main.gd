@@ -41,7 +41,7 @@ var wave_timer
 var crit_chance_cost = 200
 var menu_open = false
 var prestige_level = 0
-
+var hitstop_active = false
 
 func start_next_wave():
 	boss_spawned = false
@@ -164,12 +164,12 @@ func spawn_asteroid():
 		asteroid.speed = 90 + level * 11
 		base_value = 10
 	elif roll < big_chance + medium_chance:
-			asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
-			asteroid.size = 3.4
-			asteroid.health = 3 + level * 0.6
-			asteroid.damage = 2 + floori(wave / 5.0)
-			asteroid.speed = 175 + level * 12
-			base_value = 5
+		asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
+		asteroid.size = 3.4
+		asteroid.health = 3 + level * 0.6
+		asteroid.damage = 2 + floori(wave / 5.0)
+		asteroid.speed = 175 + level * 12
+		base_value = 5
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 2.5

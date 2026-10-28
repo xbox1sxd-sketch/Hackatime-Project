@@ -2,17 +2,20 @@ extends Area2D
 
 var bullet_scene = preload("res://Scenes/Bullet.tscn")
 var margin = 32
-var fire_delay = 0.4
 var can_shoot = true
 var bullet_count = 1
 var spread = 0.15
-var bullet_damage = 2
 var bomb_ready = false
 var bomb_cooldown = 12.0
 var bomb_radius = 300
 var bomb_damage = 6
-var crit_chance = 0.1
 var crit_multiplier = 2.0
+var base_fire_delay = 0.4
+var base_bullet_damage = 2
+var base_crit_chance = 0.1
+var fire_delay = 0.4
+var bullet_damage = 2
+var crit_chance = 0.1
 
 
 
@@ -20,7 +23,13 @@ func _ready():
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	global_position = get_viewport_rect().size / 2
+	recalculate()
 	start_bomb_charge()
+
+func recalculate():
+	fire_delay = max(base_fire_delay, 0.05)
+	bullet_damage = base_bullet_damage
+	crit_chance = clamp(base_crit_chance, 0.0, 1.0)
 
 func start_bomb_charge():
 	await get_tree().create_timer(bomb_cooldown, true, false, true).timeout

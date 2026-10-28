@@ -29,7 +29,6 @@ func play_ui_sound():
 func delete_save_data():
 	var save_path = "user://save.json"
 	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(save_path)
-
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
 	reset.text = "DATA RESET"
 	reset.disabled = true
