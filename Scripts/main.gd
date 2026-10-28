@@ -228,9 +228,9 @@ func update_ui():
 		if not wave_active:
 			status += "\nWAVE CLEARED! Next wave is coming"
 		if player.bomb_ready:
-			status += "\nDA BOMB IS READY (PRESS RIGHT CLICK)"
+			status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
 		else:
-			status += "\n bomb is recharging o-o"
+			status += "\n Bomb is Recharging"
 		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
 		
 		firerate.text = "Faster Fire\n$" + str(fire_rate_cost)
@@ -260,7 +260,7 @@ func update_ui():
 			maxhealth.text = "Max Health is MAX"
 			maxhealth.disabled = true
 
-		if player.crit_chance < 0.5:
+		if player.base_crit_chance < 0.5:
 			crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
 			crit.disabled = money < crit_chance_cost
 		else:
@@ -307,8 +307,9 @@ func buy_damage():
 	if money >= damage_cost:
 		money -= damage_cost
 		upgrades_bought += 1
-		player.bullet_damage += 1
+		player.base_bullet_damage += 1
 		damage_cost = int(damage_cost * 1.8)
+		player.recalculate()
 		update_ui()
 		save_game()
 
@@ -331,8 +332,9 @@ func buy_crit_chance():
 	if money >= crit_chance_cost:
 		money -= crit_chance_cost
 		upgrades_bought += 1
-		player.crit_chance += 0.05
+		player.base_crit_chance += 0.05
 		crit_chance_cost = int(crit_chance_cost * 2.0)
+		player.recalculate()
 		update_ui()
 		save_game()
 
@@ -361,8 +363,9 @@ func buy_fire_rate():
 	if money >= fire_rate_cost:
 		money -= fire_rate_cost
 		upgrades_bought += 1
-		player.fire_delay = max(0.1, player.fire_delay * 0.85)
+		player.base_fire_delay = max(0.1, player.base_fire_delay * 0.85)
 		fire_rate_cost = int(fire_rate_cost * 2)
+		player.recalculate()
 		update_ui()
 		save_game()
 
@@ -386,10 +389,10 @@ func do_prestige():
 	max_health = 5
 	upgrades_bought = 0
 	wave = 0
-	player.fire_delay = 0.4
+	player.base_fire_delay = 0.4
 	player.bullet_count = 1
-	player.bullet_damage = 2
-	player.crit_chance = 0.1
+	player.base_bullet_damage = 2
+	player.base_crit_chance = 0.1
 	fire_rate_cost = 60
 	multishot_cost = 150
 	repair_cost = 40
@@ -397,6 +400,7 @@ func do_prestige():
 	max_health_cost = 120
 	crit_chance_cost = 200
 	toggle_upgrade_menu()
+	player.recalculate()
 	save_game()
 	start_next_wave()
 
@@ -406,18 +410,18 @@ func save_game():
 	var data = {
 		"money": money,
 		"best_wave": best_wave,
-		"fire_delay": player.fire_delay,
+		"fire_delay": player.base_fire_delay,
 		"fire_rate_cost": fire_rate_cost,
 		"bullet_count": player.bullet_count,
 		"multishot_cost": multishot_cost,
-		"bullet_damage": player.bullet_damage,
+		"bullet_damage": player.base_bullet_damage,
 		"damage_cost": damage_cost,
 		"repair_cost": repair_cost,
 		"max_health": max_health,
 		"max_health_cost": max_health_cost,
 		"upgrades_bought": upgrades_bought,
 		"health": health,
-		"crit_chance": player.crit_chance,
+		"crit_chance": player.base_crit_chance,
 		"crit_chance_cost": crit_chance_cost,
 		"prestige_level": prestige_level,
 	}
@@ -435,16 +439,17 @@ func load_game():
 	health = int(data.get("health", max_health))
 	money = int(data.get("money", 0))
 	best_wave = int(data.get("best_wave", 0))
-	player.fire_delay = float(data.get("fire_delay", 0.4))
+	player.base_fire_delay = float(data.get("fire_delay", 0.4))
 	fire_rate_cost = int(data.get("fire_rate_cost", 10))
 	player.bullet_count= int(data.get("bullet_count", 1))
 	multishot_cost = int(data.get("multishot_cost", 25))
-	player.bullet_damage = int(data.get("bullet_damage", 1))
+	player.base_bullet_damage = int(data.get("bullet_damage", 1))
 	damage_cost = int(data.get("damage_cost", 40))
 	repair_cost = int(data.get("repair_cost", 15))
 	max_health = int(data.get("max_health", 5))
 	max_health_cost = int(data.get("max_health_cost", 30))
 	upgrades_bought = int(data.get("upgrades_bought", 0 ))
-	player.crit_chance = float(data.get("crit_chance", 0.1))
+	player.base_crit_chance = float(data.get("crit_chance", 0.1))
 	crit_chance_cost = int(data.get("crit_chance_cost", 200))
 	prestige_level = int(data.get("prestige_level", 0))
+	player.recalculate()

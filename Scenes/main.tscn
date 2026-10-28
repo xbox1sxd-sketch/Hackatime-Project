@@ -111,7 +111,7 @@ theme_override_constants/separation = 0
 [node name="Prestige" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1340694388]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "prestige(wave 20 required."
+text = "prestige (wave 20 required.)"
 
 [node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=966963763]
 layout_mode = 2
