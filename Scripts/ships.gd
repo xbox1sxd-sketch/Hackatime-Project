@@ -27,6 +27,6 @@ const DATA = {
 		"unlock_wave": 15,
 		"color": Color.GREEN,
 		"text": "+ 20% crit chance, -60% max hp",
-		"shipperk": {"crit_chance": 0.2, "max_health": 0.4}
+		"shipperk": {"crit_chance": 0.2, "max_health": 0.4},
 	},
 }
