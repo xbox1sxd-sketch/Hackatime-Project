@@ -1,20 +1,23 @@
 extends Node2D
 @onready var upgrade_sound = $CanvasLayer/UpgradeSound
-@onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/FireRate
-@onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MultiShot
-@onready var repair = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Repair
-@onready var damage = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Damage
-@onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/MaxHealth
-@onready var crit = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Crit
+@onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/FireRate
+@onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/MultiShot
+@onready var repair = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Repair
+@onready var damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Damage
+@onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/MaxHealth
+@onready var crit = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Crit
 @onready var pause_menu = $CanvasLayer/Pausemenu
 @onready var camera = $Camera2D
 @onready var upgrade_panel = $CanvasLayer/PanelContainer
 @onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
-@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Prestige
+@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Prestige
 @onready var ui_sound = $CanvasLayer/UISound
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
 @onready var boss_health_bar = $CanvasLayer/BossHealthBar
+@onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
+@onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
+@onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDouble
 var shoot_sound = preload("res://Assets/shoot.wav")
 var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
@@ -41,8 +44,12 @@ var wave_timer
 var crit_chance_cost = 200
 var menu_open = false
 var prestige_level = 0
-var selected_ship = "ship1"
+var selected_ship = "ship0"
 var hitstop_active = false
+var bomb_cd_cost = 300
+var bomb_dmg_cost = 250
+var bomb_twice_cost = 1500
+var base_max_health = 5
 
 func start_next_wave():
 	boss_spawned = false
@@ -86,15 +93,19 @@ func _ready():
 	$CanvasLayer/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
 	$CanvasLayer/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
 	$CanvasLayer/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
-	$CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
+	$CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
 	firerate.pressed.connect(buy_fire_rate)
 	multishot.pressed.connect(buy_multishot)
 	repair.pressed.connect(buy_repair)
 	damage.pressed.connect(buy_damage)
 	maxhealth.pressed.connect(buy_max_health)
 	crit.pressed.connect(buy_crit_chance)
+	bomb_cooldown.pressed.connect(buy_bomb_cooldown)
+	bomb_damage.pressed.connect(buy_bomb_damage)
+	bomb_double.pressed.connect(buy_bomb_double)
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
+	recalculate_max_health()
 	if health <= 0:
 		health = max_health
 	start_next_wave()
@@ -202,9 +213,16 @@ func _process(_delta):
 		wave_timer.start(3.0)
 
 func add_money(amount):
-	var multiplier = 1.0 + (prestige_level * 0.1)
-	money += int(ceil(amount * payout_scale * multiplier))
+	var prestige_mult = 1.0 + (prestige_level * 0.1)
+	var ship_money_mult = Ships.DATA[selected_ship]["shipperk"].get("money", 1.0)
+	money += int(ceil(amount * payout_scale * prestige_mult * ship_money_mult))
 	update_ui()
+
+func recalculate_max_health():
+	var ship_hp_mult = Ships.DATA[selected_ship]["shipperk"].get("max_health", 1.0)
+	max_health = int(base_max_health * ship_hp_mult)
+	if health > max_health:
+		health = max_health
 
 func take_damage(amount):
 	if game_over:
@@ -262,6 +280,22 @@ func update_ui():
 			maxhealth.text = "Max Health is MAX"
 			maxhealth.disabled = true
 
+		if player.bomb_cooldown > 2.0:
+			bomb_cooldown.text = "Bomb Cooldown -1s\n$" + str(bomb_cd_cost)
+			bomb_cooldown.disabled = money < bomb_cd_cost
+		else:
+			bomb_cooldown.text = "NO MORE UPGRADES BUD"
+			bomb_cooldown.disabled = true
+		bomb_damage.text = "Bomb Damage +3\n$" + str(bomb_dmg_cost)
+		bomb_damage.disabled = money < bomb_dmg_cost
+
+		if not player.bomb_twice:
+			bomb_double.text = "Double Bomb\n$" + str(bomb_twice_cost)
+			bomb_double.disabled = money < bomb_twice_cost
+		else:
+			bomb_double.text = "Double Bomb Max"
+			bomb_double.disabled = true
+
 		if player.base_crit_chance < 0.5:
 			crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
 			crit.disabled = money < crit_chance_cost
@@ -274,8 +308,6 @@ func update_ui():
 		else:
 			prestige.text = "LOCKED (Wave 20)\nLevel: " + str(prestige_level)
 			prestige.disabled = true
-
-
 
 
 func toggle_upgrade_menu():
@@ -321,10 +353,11 @@ func buy_max_health():
 	if money >= max_health_cost:
 		money -= max_health_cost
 		upgrades_bought += 1
-		max_health += 1
+		base_max_health += 1
+		max_health_cost = int(max_health_cost * 1.6)
+		recalculate_max_health()
 		if not game_over:
 			health += 1
-		max_health_cost = int(max_health_cost * 1.6)
 		update_ui()
 		save_game()
 
@@ -371,6 +404,29 @@ func buy_fire_rate():
 		update_ui()
 		save_game()
 
+func buy_bomb_cooldown():
+	if money >= bomb_cd_cost:
+		money -= bomb_cd_cost
+		player.bomb_cooldown = max(2.0, player.bomb_cooldown - 1.0)
+		bomb_cd_cost = int(bomb_cd_cost * 1.5)
+		update_ui()
+		save_game()
+
+func buy_bomb_damage():
+	if money >= bomb_dmg_cost:
+		money -= bomb_dmg_cost
+		player.bomb_damage += 3
+		bomb_dmg_cost = int(bomb_dmg_cost * 1.5)
+		update_ui()
+		save_game()
+
+func buy_bomb_double():
+	if money >= bomb_twice_cost and not player.bomb_twice:
+		money -= bomb_twice_cost
+		player.bomb_twice = true
+		update_ui()
+		save_game()
+
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
 	p.volume_db = -8
@@ -401,6 +457,14 @@ func do_prestige():
 	damage_cost = 100
 	max_health_cost = 120
 	crit_chance_cost = 200
+	player.bomb_cooldown = 12.0
+	player.bomb_damage = 6
+	player.bomb_twice = false
+	bomb_cd_cost = 300
+	bomb_dmg_cost = 250
+	base_max_health = 5
+	recalculate_max_health()
+	health = max_health
 	toggle_upgrade_menu()
 	player.recalculate()
 	save_game()
@@ -427,6 +491,12 @@ func save_game():
 		"crit_chance_cost": crit_chance_cost,
 		"prestige_level": prestige_level,
 		"selected_ship": selected_ship,
+		"bomb_cooldown": player.bomb_cooldown,
+		"bomb_damage": player.bomb_damage,
+		"bomb_twice": player.bomb_twice,
+		"bomb_cd_cost": bomb_cd_cost,
+		"bomb_dmg_cost": bomb_dmg_cost,
+		"base_max_health": base_max_health
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -455,5 +525,12 @@ func load_game():
 	player.base_crit_chance = float(data.get("crit_chance", 0.1))
 	crit_chance_cost = int(data.get("crit_chance_cost", 200))
 	prestige_level = int(data.get("prestige_level", 0))
-	selected_ship = str(data.get("selected_ship", "ship1"))
+	selected_ship = str(data.get("selected_ship", "ship0"))
+	player.bomb_cooldown = float(data.get("bomb_cooldown", 12.0))
+	player.bomb_damage = int(data.get("bomb_damage", 6))
+	player.bomb_twice = bool(data.get("bomb_twice", false))
+	bomb_cd_cost = int(data.get("bomb_cd_cost", 300))
+	bomb_dmg_cost = int(data.get("bomb_dmg_cost", 250))
+	base_max_health = int(data.get("base_max_health", 5))
+	recalculate_max_health()
 	player.recalculate()

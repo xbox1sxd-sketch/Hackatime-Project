@@ -23,13 +23,14 @@ func _build_ship_buttons():
 		c.queue_free()
 		
 	var best_wave = 0
-	var selected_ship = "ship1"
+	var selected_ship = "ship0"
 	if FileAccess.file_exists("user://save.json"):
 		var file = FileAccess.open("user://save.json", FileAccess.READ)
-		var data = JSON.parse_string(file.get_as_text())
-		if data != null:
-			best_wave = int(data.get("best_wave", 0))
-			selected_ship = str(data.get("selected_ship", "ship1"))
+		if file.get_length() > 0:
+			var data = JSON.parse_string(file.get_as_text())
+			if data != null:
+				best_wave = int(data.get("best_wave", 0))
+				selected_ship = str(data.get("selected_ship", "ship0"))
 	if ship_preview != null:
 		ship_preview.self_modulate = Ships.DATA[selected_ship]["color"]
 	for id in Ships.DATA:
@@ -41,6 +42,7 @@ func _build_ship_buttons():
 			label = "✓" + label
 		var btn = Button.new()
 		btn.text = label
+		btn.tooltip_text = ship["text"]
 		if ship["unlock_wave"] > best_wave:
 			btn.disabled = true
 		btn.add_theme_color_override("font_color", ship["color"])
@@ -51,7 +53,8 @@ func _select_ship(id):
 	var data = null
 	if FileAccess.file_exists("user://save.json"):
 		var file = FileAccess.open("user://save.json", FileAccess.READ)
-		data = JSON.parse_string(file.get_as_text())
+		if file.get_length() > 0:
+			data = JSON.parse_string(file.get_as_text())
 	if data == null:
 		data = {}
 	data["selected_ship"] = id

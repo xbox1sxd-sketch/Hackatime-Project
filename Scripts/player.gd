@@ -16,6 +16,7 @@ var base_crit_chance = 0.1
 var fire_delay = 0.4
 var bullet_damage = 2
 var crit_chance = 0.1
+var bomb_twice = false
 @onready var sprite = $AnimatedSprite2D
 
 
@@ -28,9 +29,13 @@ func _ready():
 	start_bomb_charge()
 
 func recalculate():
-	fire_delay = max(base_fire_delay, 0.05)
-	bullet_damage = base_bullet_damage
-	crit_chance = clamp(base_crit_chance, 0.0, 1.0)
+	var ship_stats = Ships.DATA[get_parent().selected_ship]["shipperk"]
+	var fr_mult = ship_stats.get("fire_rate", 1.0)
+	fire_delay = max(base_fire_delay / fr_mult, 0.05)
+	var dmg_mult = ship_stats.get("damage", 1.0)
+	bullet_damage = int(base_bullet_damage * dmg_mult)
+	var crit_add = ship_stats.get("crit_chance", 0.0)
+	crit_chance = clamp(base_crit_chance + crit_add, 0.0, 1.0)
 	
 func apply_ship_color(c):
 	sprite.self_modulate = c
@@ -66,18 +71,26 @@ func use_bomb():
 		return
 	bomb_ready = false
 	get_parent().update_ui()
+	do_bomb_damage()
+	make_blast_ring()
+	get_parent().play_sound(get_parent().boom_sound)
+	get_parent().shake(25.0, 0.4)
+	if bomb_twice:
+		await get_tree().create_timer(0.2).timeout
+		if not get_parent().game_over:
+			do_bomb_damage()
+			make_blast_ring()
+			get_parent().play_sound(get_parent().boom_sound)
+			get_parent().shake(25.0, 0.4)
+	start_bomb_charge()
+
+func do_bomb_damage():
 	var dmg = bomb_damage + bullet_damage * 2
 	for a in get_tree().get_nodes_in_group("asteroids"):
 		if a.is_queued_for_deletion():
 			continue
 		if a.global_position.distance_to(global_position) <= bomb_radius:
 			a.take_hit(dmg)
-	make_blast_ring()
-	get_parent().play_sound(get_parent().boom_sound)
-	get_parent().shake(25.0, 0.4)
-	start_bomb_charge()
-
-
 
 func make_blast_ring():
 	var ring = CPUParticles2D.new()
