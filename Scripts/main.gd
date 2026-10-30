@@ -426,6 +426,7 @@ func save_game():
 		"crit_chance": player.base_crit_chance,
 		"crit_chance_cost": crit_chance_cost,
 		"prestige_level": prestige_level,
+		"selected_ship": selected_ship,
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -454,4 +455,5 @@ func load_game():
 	player.base_crit_chance = float(data.get("crit_chance", 0.1))
 	crit_chance_cost = int(data.get("crit_chance_cost", 200))
 	prestige_level = int(data.get("prestige_level", 0))
+	selected_ship = str(data.get("selected_ship", "ship1"))
 	player.recalculate()

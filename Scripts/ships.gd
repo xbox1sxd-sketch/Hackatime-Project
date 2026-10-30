@@ -4,7 +4,7 @@ const DATA = {
 	"ship1": {
 		"name": "ship1",
 		"unlock_wave": 0,
-		"color": Color.ORANGE_RED,
+		"color": Color.WHITE,
 		"text": "+ 50% damage, -30% fire rate",
 		"shipperk": {"damage": 1.50, "fire_rate": 0.70},
 	},

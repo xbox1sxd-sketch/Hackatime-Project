@@ -58,7 +58,7 @@ func _select_ship(id):
 	var f = FileAccess.open("user://save.json", FileAccess.WRITE)
 	f.store_string(JSON.stringify(data))
 	if ship_preview != null:
-		ship_preview.color = Ships.DATA[id]["color"]
+		ship_preview.self_modulate = Ships.DATA[id]["color"]
 	_build_ship_buttons()
 	
 
