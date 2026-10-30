@@ -273,7 +273,7 @@ func update_ui():
 		damage.text = "Damage +1\n$" + str(damage_cost)
 		damage.disabled = money < damage_cost
 
-		if max_health < 15:
+		if base_max_health < 15:
 			maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
 			maxhealth.disabled = money < max_health_cost
 		else:
@@ -348,7 +348,7 @@ func buy_damage():
 		save_game()
 
 func buy_max_health():
-	if max_health >= 15:
+	if base_max_health >= 15:
 		return
 	if money >= max_health_cost:
 		money -= max_health_cost
