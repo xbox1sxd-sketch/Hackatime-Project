@@ -61,7 +61,10 @@ var last_played_time = 0
 func start_next_wave():
 	boss_spawned = false
 	wave += 1
-	to_spawn = 4 + wave * 2
+	if wave %5 == 0:
+		to_spawn = 1
+	else:
+		to_spawn = 4 + wave * 2
 	wave_active = true
 	spawn_timer.wait_time = max(0.3, 1.0 - wave * 0.05)
 	spawn_timer.start()
@@ -154,10 +157,10 @@ func spawn_boss():
 	boss.is_boss = true
 	boss.tint = Color(0.658, 0.144, 0.704, 1.0)
 	boss.size = 5.0
-	boss.health = int(60 + get_level() * 8)
-	boss.damage = 5
-	boss.speed = 40
-	boss.value = 50 + wave * 10
+	boss.health = int(150 + get_level() * 7)
+	boss.damage = 10
+	boss.speed = 50
+	boss.value = 100 + wave * 20
 	add_child(boss)
 	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)
 	boss_health_bar.visible = true
@@ -168,12 +171,12 @@ func spawn_boss():
 func spawn_asteroid():
 	if game_over:
 		return
-	if wave % 5 == 0 and not boss_spawned:
-		boss_spawned = true
-		spawn_boss()
-		to_spawn -= 1
-		if to_spawn <= 0:
-			spawn_timer.stop()
+	if wave % 5 == 0:
+		if not boss_spawned:
+			boss_spawned = true
+			spawn_boss()
+		to_spawn = 0
+		spawn_timer.stop()
 		return
 	var asteroid = asteroid_scene.instantiate()
 	var screen = get_viewport_rect().size
