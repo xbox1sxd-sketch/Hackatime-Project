@@ -16,6 +16,7 @@ var base_crit_chance = 0.1
 var fire_delay = 0.4
 var bullet_damage = 2
 var crit_chance = 0.1
+@onready var sprite = $AnimatedSprite2D
 
 
 
@@ -30,7 +31,10 @@ func recalculate():
 	fire_delay = max(base_fire_delay, 0.05)
 	bullet_damage = base_bullet_damage
 	crit_chance = clamp(base_crit_chance, 0.0, 1.0)
-
+	
+func apply_ship_color(c):
+	sprite.self_modulate
+	
 func start_bomb_charge():
 	await get_tree().create_timer(bomb_cooldown, true, false, true).timeout
 	bomb_ready = true

@@ -4,6 +4,7 @@ extends Control
 @onready var confirmation_dialog: ConfirmationDialog = $ConfirmationDialog
 @onready var ui_sound = $UISound
 @onready var ship_row = $VBoxContainer/ShipRow
+@onready var ship_preview = $VBoxContainer/ShipPreview
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -29,6 +30,8 @@ func _build_ship_buttons():
 		if data != null:
 			best_wave = int(data.get("best_wave", 0))
 			selected_ship = str(data.get("selected_ship", "ship1"))
+	if ship_preview != null:
+		ship_preview.self_modulate = Ships.DATA[selected_ship]["color"]
 	for id in Ships.DATA:
 		var ship = Ships.DATA[id]
 		var label = ship["name"]
@@ -54,6 +57,8 @@ func _select_ship(id):
 	data["selected_ship"] = id
 	var f = FileAccess.open("user://save.json", FileAccess.WRITE)
 	f.store_string(JSON.stringify(data))
+	if ship_preview != null:
+		ship_preview.color = Ships.DATA[id]["color"]
 	_build_ship_buttons()
 	
 

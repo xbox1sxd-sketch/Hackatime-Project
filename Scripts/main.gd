@@ -41,6 +41,7 @@ var wave_timer
 var crit_chance_cost = 200
 var menu_open = false
 var prestige_level = 0
+var selected_ship = "ship1"
 var hitstop_active = false
 
 func start_next_wave():
@@ -93,6 +94,7 @@ func _ready():
 	maxhealth.pressed.connect(buy_max_health)
 	crit.pressed.connect(buy_crit_chance)
 	load_game()
+	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	if health <= 0:
 		health = max_health
 	start_next_wave()
