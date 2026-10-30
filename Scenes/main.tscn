@@ -175,6 +175,9 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
+[node name="OfflineUpgrade" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1505741055]
+layout_mode = 2
+
 [node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1698430788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20

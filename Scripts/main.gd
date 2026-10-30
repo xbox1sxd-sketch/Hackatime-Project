@@ -14,6 +14,7 @@ extends Node2D
 @onready var ui_sound = $CanvasLayer/UISound
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
+@onready var offline_btn = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/OfflineUpgrade
 @onready var boss_health_bar = $CanvasLayer/BossHealthBar
 @onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
 @onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
@@ -23,6 +24,7 @@ var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
 var asteroid_scene = preload("res://Scenes/asteriod.tscn")
 var money = 0
+var offline_message = ""
 var fire_rate_cost = 60
 var health = 5
 var game_over = false
@@ -50,6 +52,9 @@ var bomb_cd_cost = 300
 var bomb_dmg_cost = 250
 var bomb_twice_cost = 1500
 var base_max_health = 5
+var offline_level = 0
+var offline_cost = 1000
+var last_played_time = 0
 
 func start_next_wave():
 	boss_spawned = false
@@ -103,12 +108,18 @@ func _ready():
 	bomb_cooldown.pressed.connect(buy_bomb_cooldown)
 	bomb_damage.pressed.connect(buy_bomb_damage)
 	bomb_double.pressed.connect(buy_bomb_double)
+	offline_btn.pressed.connect(buy_offline_upgrade)
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
 	if health <= 0:
 		health = max_health
 	start_next_wave()
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		save_game()
+		get_tree().quit()
 
 func toggle_pause():
 	get_tree().paused = not get_tree().paused
@@ -251,7 +262,12 @@ func update_ui():
 			status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
 		else:
 			status += "\n Bomb is Recharging"
-		money_label.text = status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
+			
+		var final_text = ""
+		if offline_message != "":
+			final_text = offline_message + "\n\n"
+
+		money_label.text = final_text + status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
 		
 		firerate.text = "Faster Fire\n$" + str(fire_rate_cost)
 		firerate.disabled = money < fire_rate_cost
@@ -295,7 +311,11 @@ func update_ui():
 		else:
 			bomb_double.text = "Double Bomb Max"
 			bomb_double.disabled = true
-
+		if offline_level == 0:
+			offline_btn.text = "Unlock Offline Money\n$" + str(offline_cost)
+		else:
+			offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + str(offline_cost)
+		offline_btn.disabled = money < offline_cost
 		if player.base_crit_chance < 0.5:
 			crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
 			crit.disabled = money < crit_chance_cost
@@ -427,6 +447,14 @@ func buy_bomb_double():
 		update_ui()
 		save_game()
 
+func buy_offline_upgrade():
+	if money >= offline_cost:
+		money -= offline_cost
+		offline_level += 1
+		offline_cost = int(offline_cost * 2.0)
+		update_ui()
+		save_game()
+
 func play_sound(stream):
 	var p = AudioStreamPlayer.new()
 	p.volume_db = -8
@@ -447,6 +475,8 @@ func do_prestige():
 	max_health = 5
 	upgrades_bought = 0
 	wave = 0
+	offline_level = 0
+	offline_cost = 1000
 	player.base_fire_delay = 0.4
 	player.bullet_count = 1
 	player.base_bullet_damage = 2
@@ -496,7 +526,10 @@ func save_game():
 		"bomb_twice": player.bomb_twice,
 		"bomb_cd_cost": bomb_cd_cost,
 		"bomb_dmg_cost": bomb_dmg_cost,
-		"base_max_health": base_max_health
+		"base_max_health": base_max_health,
+		"offline_level": offline_level,
+		"offline_cost": offline_cost,
+		"last_played": Time.get_unix_time_from_system()
 	}
 
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
@@ -533,4 +566,14 @@ func load_game():
 	bomb_dmg_cost = int(data.get("bomb_dmg_cost", 250))
 	base_max_health = int(data.get("base_max_health", 5))
 	recalculate_max_health()
+	offline_level = int(data.get("offline_level", 0))
+	offline_cost = int(data.get("offline_cost", 1000))
+	last_played_time = float(data.get("last_played", 0))
+	if last_played_time > 0 and offline_level > 0:
+		var current_time = Time.get_unix_time_from_system()
+		var seconds_away = int(current_time - last_played_time)
+		if seconds_away > 5:
+			var earned = seconds_away * offline_level
+			money += earned
+			offline_message = "YOU'RE BACK! You earned $" + str(earned) + " While Away!"
 	player.recalculate()
