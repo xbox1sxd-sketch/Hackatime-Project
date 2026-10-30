@@ -17,6 +17,8 @@ var fire_delay = 0.4
 var bullet_damage = 2
 var crit_chance = 0.1
 var bomb_twice = false
+var target_position = Vector2.ZERO
+var max_speed = 900.0
 @onready var sprite = $AnimatedSprite2D
 
 
@@ -25,6 +27,7 @@ func _ready():
 	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	global_position = get_viewport_rect().size / 2
+	target_position = global_position
 	recalculate()
 	start_bomb_charge()
 
@@ -47,18 +50,21 @@ func start_bomb_charge():
 
 
 
-func _process(_delta):
-	if get_parent().menu_open: return
+func _process(delta):
+	if get_parent().menu_open:
+		return
+		#finally using lerp lol
+	global_position = global_position.lerp(target_position, 20 * delta)
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		shoot()
 
 func _input(event):
 	if get_tree().paused: return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		target_position = target_position + event.relative
 		var screen = get_viewport_rect().size
-		global_position += event.relative
-		global_position.x = clamp(global_position.x, margin, screen.x - margin)
-		global_position.y = clamp(global_position.y, margin, screen.y - margin)
+		target_position.x = clamp(target_position.x, margin, screen.x - margin)
+		target_position.y = clamp(target_position.y, margin, screen.y - margin)
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED and not get_parent().menu_open:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
