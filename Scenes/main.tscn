@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://q5ewrrojbrhf" path="res://Scenes/player.tscn" id="1_jjgbg"]
 [ext_resource type="Script" uid="uid://dugc8d2jhhkmh" path="res://Scripts/texturerect1.gd" id="2_jjvhh"]
 [ext_resource type="Texture2D" uid="uid://26oskyli50af" path="res://Assets/spr_background_space.png" id="3_8gbba"]
-[ext_resource type="Script" uid="uid://c281krh1fo5if" path="res://Scripts/texturerect2.gd" id="3_kry3j"]
 [ext_resource type="AudioStream" uid="uid://dfn535ghnqp8k" path="res://Assets/click.wav" id="6_21xkr"]
 [ext_resource type="AudioStream" uid="uid://b082uusr6jotg" path="res://Assets/powerup.wav" id="7_6bp64"]
 
@@ -35,7 +34,8 @@ offset_right = 1152.0
 texture = ExtResource("3_8gbba")
 expand_mode = 1
 flip_v = true
-script = ExtResource("3_kry3j")
+script = ExtResource("2_jjvhh")
+is_second = true
 
 [node name="Player" parent="." unique_id=1828675205 instance=ExtResource("1_jjgbg")]
 

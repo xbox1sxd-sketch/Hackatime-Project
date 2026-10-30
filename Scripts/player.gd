@@ -76,7 +76,7 @@ func use_bomb():
 	get_parent().play_sound(get_parent().boom_sound)
 	get_parent().shake(25.0, 0.4)
 	if bomb_twice:
-		await get_tree().create_timer(0.2).timeout
+		await get_tree().create_timer(1.0).timeout
 		if not get_parent().game_over:
 			do_bomb_damage()
 			make_blast_ring()
