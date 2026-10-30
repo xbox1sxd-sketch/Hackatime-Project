@@ -140,7 +140,9 @@ func die(killed_by_player):
 	if killed_by_player:
 		if is_boss:
 			get_parent().boss_reward()
-		get_parent().add_money(value)
+		else:
+			get_parent().combo_kill()
+		get_parent().add_money(value, true)
 		get_parent().play_sound(get_parent().boom_sound)
 	make_explosion()
 	queue_free()

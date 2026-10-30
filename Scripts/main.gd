@@ -19,6 +19,8 @@ extends Node2D
 @onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
 @onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
 @onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDouble
+var combo = 1
+var combo_timer
 var shoot_sound = preload("res://Assets/shoot.wav")
 var boom_sound = preload("res://Assets/boom.wav")
 var hurt_sound = preload("res://Assets/hurt.wav")
@@ -85,12 +87,13 @@ func _ready():
 	spawn_timer.timeout.connect(spawn_asteroid)
 	add_child(spawn_timer)
 	
-	wave_timer = Timer.new()
-	wave_timer.one_shot = true
-	wave_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
-	wave_timer.timeout.connect(start_next_wave)
-	add_child(wave_timer)
 	
+	combo_timer = Timer.new()
+	combo_timer.one_shot = true
+	combo_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
+	combo_timer.wait_time = 2.0
+	combo_timer.timeout.connect(reset_combo)
+	add_child(combo_timer)
 	pause_menu.visible = false
 	upgrade_panel.visible = false
 	upgrade_prompt.visible = true
@@ -182,7 +185,7 @@ func spawn_asteroid():
 	if roll < big_chance:
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 4.0
-		asteroid.health = int(5 + level * 0.7)
+		asteroid.health = 5 + level * 0.7
 		asteroid.damage = 3 + floori(wave / 5.0)
 		asteroid.splits_left = 1
 		asteroid.speed = 90 + level * 11
@@ -190,14 +193,14 @@ func spawn_asteroid():
 	elif roll < big_chance + medium_chance:
 		asteroid.tint = Color(0.7, 0.5, 0.0, 1.0)
 		asteroid.size = 3.4
-		asteroid.health = 3 + level * 0.6
-		asteroid.damage = 2 + floori(wave / 5.0)
+		asteroid.health = 5 + level * 0.6
+		asteroid.damage = 3 + floori(wave / 5.0)
 		asteroid.speed = 175 + level * 12
 		base_value = 5
 	else:
 		asteroid.tint = Color(0.773, 0.763, 0.003, 1.0) 
 		asteroid.size = 2.5
-		asteroid.health = 1 + level * 0.5
+		asteroid.health = 3 + level * 0.5
 		asteroid.damage = 1 + floori(wave / 5.0)
 		asteroid.speed = 300 + level * 22
 		base_value = 2
@@ -221,12 +224,25 @@ func _process(_delta):
 		best_wave = max(best_wave, wave)
 		save_game()
 		update_ui()
-		wave_timer.start(3.0)
+		start_next_wave()
 
-func add_money(amount):
+func add_money(amount, from_kill = false):
+	var combo_mult = 1.0
+	if from_kill:
+		combo_mult = 1.0 + ((combo - 1) * 0.2)
 	var prestige_mult = 1.0 + (prestige_level * 0.1)
 	var ship_money_mult = Ships.DATA[selected_ship]["shipperk"].get("money", 1.0)
-	money += int(ceil(amount * payout_scale * prestige_mult * ship_money_mult))
+	money += int(ceil(amount * payout_scale * prestige_mult * ship_money_mult * combo_mult))
+	update_ui()
+
+func combo_kill():
+	if combo < 10:
+		combo = combo + 1
+	combo_timer.start(2.0)
+	update_ui()
+
+func reset_combo():
+	combo = 1
 	update_ui()
 
 func recalculate_max_health():
@@ -256,8 +272,9 @@ func update_ui():
 		var status = "Wave " + str(wave)
 		if wave % 5 == 0:
 			status += " BOSS IS COMING"
-		if not wave_active:
-			status += "\nWAVE CLEARED! Next wave is coming"
+			
+		if combo > 1: status = status + "\ncombo x" + str(combo) + "!"
+		
 		if player.bomb_ready:
 			status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
 		else:
