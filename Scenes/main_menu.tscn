@@ -69,9 +69,13 @@ stretch_mode = 5
 [node name="ShipRow" type="HBoxContainer" parent="VBoxContainer" unique_id=817421637]
 layout_mode = 2
 
-[node name="Play" type="Button" parent="VBoxContainer" unique_id=1047940572]
+[node name="NewGame" type="Button" parent="VBoxContainer" unique_id=1052032230]
 layout_mode = 2
-text = "Play"
+text = "New Game"
+
+[node name="Resume" type="Button" parent="VBoxContainer" unique_id=1047940572]
+layout_mode = 2
+text = "Resume"
 autowrap_trim_flags = 0
 
 [node name="Quit" type="Button" parent="VBoxContainer" unique_id=449005511]

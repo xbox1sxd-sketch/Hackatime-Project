@@ -44,7 +44,6 @@ var max_health_cost = 120
 const save_path = "user://save.json"
 var upgrades_bought = 0
 var payout_scale = 0.5
-var wave_timer
 var crit_chance_cost = 200
 var menu_open = false
 var prestige_level = 0
@@ -57,6 +56,9 @@ var base_max_health = 5
 var offline_level = 0
 var offline_cost = 1000
 var last_played_time = 0
+var total_money_earned = 0
+@onready var death_menu = $DeathMenu
+@onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
 
 func start_next_wave():
 	boss_spawned = false
@@ -90,6 +92,8 @@ func _ready():
 	spawn_timer.timeout.connect(spawn_asteroid)
 	add_child(spawn_timer)
 	
+	death_menu.visible = false
+	$DeathMenu/ColorRect/VBoxContainer/Restart.pressed.connect(restart_game)
 	
 	combo_timer = Timer.new()
 	combo_timer.one_shot = true
@@ -121,6 +125,10 @@ func _ready():
 	if health <= 0:
 		health = max_health
 	start_next_wave()
+
+func restart_game():
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -235,7 +243,9 @@ func add_money(amount, from_kill = false):
 		combo_mult = 1.0 + ((combo - 1) * 0.2)
 	var prestige_mult = 1.0 + (prestige_level * 0.1)
 	var ship_money_mult = Ships.DATA[selected_ship]["shipperk"].get("money", 1.0)
-	money += int(ceil(amount * payout_scale * prestige_mult * ship_money_mult * combo_mult))
+	var final_money = int(ceil(amount * payout_scale * prestige_mult * ship_money_mult * combo_mult))
+	money += final_money
+	total_money_earned += final_money
 	update_ui()
 
 func combo_kill():
@@ -266,88 +276,90 @@ func take_damage(amount):
 		spawn_timer.stop()
 		best_wave = max(best_wave, wave)
 		save_game()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		death_menu.visible = true
+		stats_label.text = "Total Money Earned: $" + str(total_money_earned) + "\n\nWaves Survived: " + str(wave)
 	update_ui()
 
 func update_ui():
 	if game_over:
-		money_label.text = "GAME OVER\nYou reached wave " + str(wave) + "\nBest wave: " + str(best_wave) + "\nMoney: " + str(money) + "\n" + "\n\nPress R to restart"
+		return
+	var status = "Wave " + str(wave)
+	if wave % 5 == 0:
+		status += " BOSS IS COMING"
+	
+	if combo > 1: status = status + "\ncombo x" + str(combo) + "!"
+		
+	if player.bomb_ready:
+		status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
 	else:
-		var status = "Wave " + str(wave)
-		if wave % 5 == 0:
-			status += " BOSS IS COMING"
-			
-		if combo > 1: status = status + "\ncombo x" + str(combo) + "!"
+		status += "\n Bomb is Recharging"
+	
+	var final_text = ""
+	if offline_message != "":
+		final_text = offline_message + "\n\n"
+
+	money_label.text = final_text + status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
 		
-		if player.bomb_ready:
-			status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
-		else:
-			status += "\n Bomb is Recharging"
-			
-		var final_text = ""
-		if offline_message != "":
-			final_text = offline_message + "\n\n"
-
-		money_label.text = final_text + status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: " + str(money)
+	firerate.text = "Faster Fire\n$" + str(fire_rate_cost)
+	firerate.disabled = money < fire_rate_cost
 		
-		firerate.text = "Faster Fire\n$" + str(fire_rate_cost)
-		firerate.disabled = money < fire_rate_cost
+	if player.bullet_count < 5:
+		multishot.text = "Multishot\n$" + str(multishot_cost)
+		multishot.disabled = money < multishot_cost
+	else: 
+		multishot.text = "Multishot Is MAX"
+		multishot.disabled = true
 		
-		if player.bullet_count < 5:
-			multishot.text = "Multishot\n$" + str(multishot_cost)
-			multishot.disabled = money < multishot_cost
-		else: 
-			multishot.text = "Multishot Is MAX"
-			multishot.disabled = true
-		
-		if health < max_health and not game_over:
-			repair.text = "Repair +1\n$" + str(repair_cost)
-			repair.disabled = money < repair_cost
-		else:
-			repair.text = "Health Full"
-			repair.disabled = true
+	if health < max_health and not game_over:
+		repair.text = "Repair +1\n$" + str(repair_cost)
+		repair.disabled = money < repair_cost
+	else:
+		repair.text = "Health Full"
+		repair.disabled = true
 
-		damage.text = "Damage +1\n$" + str(damage_cost)
-		damage.disabled = money < damage_cost
+	damage.text = "Damage +1\n$" + str(damage_cost)
+	damage.disabled = money < damage_cost
 
-		if base_max_health < 15:
-			maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
-			maxhealth.disabled = money < max_health_cost
-		else:
-			maxhealth.text = "Max Health is MAX"
-			maxhealth.disabled = true
+	if base_max_health < 15:
+		maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
+		maxhealth.disabled = money < max_health_cost
+	else:
+		maxhealth.text = "Max Health is MAX"
+		maxhealth.disabled = true
 
-		if player.bomb_cooldown > 2.0:
-			bomb_cooldown.text = "Bomb Cooldown -1s\n$" + str(bomb_cd_cost)
-			bomb_cooldown.disabled = money < bomb_cd_cost
-		else:
-			bomb_cooldown.text = "NO MORE UPGRADES BUD"
-			bomb_cooldown.disabled = true
-		bomb_damage.text = "Bomb Damage +3\n$" + str(bomb_dmg_cost)
-		bomb_damage.disabled = money < bomb_dmg_cost
+	if player.bomb_cooldown > 2.0:
+		bomb_cooldown.text = "Bomb Cooldown -1s\n$" + str(bomb_cd_cost)
+		bomb_cooldown.disabled = money < bomb_cd_cost
+	else:
+		bomb_cooldown.text = "NO MORE UPGRADES BUD"
+		bomb_cooldown.disabled = true
+	bomb_damage.text = "Bomb Damage +3\n$" + str(bomb_dmg_cost)
+	bomb_damage.disabled = money < bomb_dmg_cost
 
-		if not player.bomb_twice:
-			bomb_double.text = "Double Bomb\n$" + str(bomb_twice_cost)
-			bomb_double.disabled = money < bomb_twice_cost
-		else:
-			bomb_double.text = "Double Bomb Max"
-			bomb_double.disabled = true
-		if offline_level == 0:
-			offline_btn.text = "Unlock Offline Money\n$" + str(offline_cost)
-		else:
-			offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + str(offline_cost)
-		offline_btn.disabled = money < offline_cost
-		if player.base_crit_chance < 0.5:
-			crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
-			crit.disabled = money < crit_chance_cost
-		else:
-			crit.text = "Crit Chance Max"
-			crit.disabled = true
-		if wave >= 20:
-			prestige.text = "PRESTIGE (10% Money)\nLevel: " + str(prestige_level)
-			prestige.disabled = false
-		else:
-			prestige.text = "LOCKED (Wave 20)\nLevel: " + str(prestige_level)
-			prestige.disabled = true
+	if not player.bomb_twice:
+		bomb_double.text = "Double Bomb\n$" + str(bomb_twice_cost)
+		bomb_double.disabled = money < bomb_twice_cost
+	else:
+		bomb_double.text = "Double Bomb Max"
+		bomb_double.disabled = true
+	if offline_level == 0:
+		offline_btn.text = "Unlock Offline Money\n$" + str(offline_cost)
+	else:
+		offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + str(offline_cost)
+	offline_btn.disabled = money < offline_cost
+	if player.base_crit_chance < 0.5:
+		crit.text = "Crit Chance % +5\n$" + str(crit_chance_cost)
+		crit.disabled = money < crit_chance_cost
+	else:
+		crit.text = "Crit Chance Max"
+		crit.disabled = true
+	if wave >= 20:
+		prestige.text = "PRESTIGE (10% Money)\nLevel: " + str(prestige_level)
+		prestige.disabled = false
+	else:
+		prestige.text = "LOCKED (Wave 20)\nLevel: " + str(prestige_level)
+		prestige.disabled = true
 
 
 func toggle_upgrade_menu():
@@ -549,6 +561,7 @@ func save_game():
 		"base_max_health": base_max_health,
 		"offline_level": offline_level,
 		"offline_cost": offline_cost,
+		"total_money_earned": total_money_earned,
 		"last_played": Time.get_unix_time_from_system()
 	}
 
@@ -589,6 +602,7 @@ func load_game():
 	offline_level = int(data.get("offline_level", 0))
 	offline_cost = int(data.get("offline_cost", 1000))
 	last_played_time = float(data.get("last_played", 0))
+	total_money_earned = int(data.get("total_money_earned", 0))
 	if last_played_time > 0 and offline_level > 0:
 		var current_time = Time.get_unix_time_from_system()
 		var seconds_away = int(current_time - last_played_time)

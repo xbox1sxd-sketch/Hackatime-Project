@@ -5,16 +5,27 @@ extends Control
 @onready var ui_sound = $UISound
 @onready var ship_row = $VBoxContainer/ShipRow
 @onready var ship_preview = $VBoxContainer/ShipPreview
+@onready var resume: Button = $VBoxContainer/Resume
+@onready var new_game: Button = $VBoxContainer/NewGame
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	$VBoxContainer/Play.pressed.connect(start_game)
+	new_game.pressed.connect(start_new_game)
+	resume.pressed.connect(start_game)
 	$VBoxContainer/Quit.pressed.connect(quit_game)
 	reset.pressed.connect(show_reset_warning)
 	confirmation_dialog.confirmed.connect(delete_save_data)
 	for button in find_children("*", "Button"):
 		button.pressed.connect(play_ui_sound)
+	if not FileAccess.file_exists("user://save.json"):
+		resume.disabled = true
 	_build_ship_buttons()
+
+func start_new_game():
+	if FileAccess.file_exists("user://save.json"):
+		DirAccess.remove_absolute("user://save.json")
+	start_game()
+	
 
 func _build_ship_buttons():
 	if ship_row == null:
