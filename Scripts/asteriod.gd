@@ -34,7 +34,10 @@ func _on_area_entered(area):
 		return
 	if area.is_in_group("bullets"):
 		var hit_pos = area.global_position
-		area.queue_free()
+		if area.pierce > 0:
+			area.pierce -=1
+		else:
+			area.queue_free()
 		take_hit(area.damage, hit_pos)
 	elif area.is_in_group("player"):
 		get_parent().take_damage(damage)

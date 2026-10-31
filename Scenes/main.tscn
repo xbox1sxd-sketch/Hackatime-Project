@@ -184,6 +184,10 @@ theme_override_font_sizes/font_size = 20
 text = "Close shop (M)
 "
 
+[node name="Pierce" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=625479318]
+layout_mode = 2
+text = "Upgrade"
+
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
 offset_left = 823.0
 offset_top = 2.0
@@ -261,7 +265,7 @@ vertical_alignment = 1
 
 [node name="Embarrassing" type="Label" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=454720438]
 layout_mode = 2
-text = "Now that is just humiliating."
+text = "Now thats just humiliating :p"
 
 [node name="Restart" type="Button" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=2109502372]
 layout_mode = 2

@@ -19,6 +19,7 @@ var crit_chance = 0.1
 var bomb_twice = false
 var target_position = Vector2.ZERO
 var max_speed = 900.0
+var bullet_pierce = 0
 @onready var sprite = $AnimatedSprite2D
 
 
@@ -150,6 +151,7 @@ func shoot():
 	make_muzzle_flash(muzzle_pos)
 	for i in bullet_count:
 		var bullet = bullet_scene.instantiate()
+		bullet.pierce = bullet_pierce
 		bullet.damage = bullet_damage
 		var offset = ( i - (bullet_count - 1)/ 2.0) * spread
 		get_parent().add_child(bullet)

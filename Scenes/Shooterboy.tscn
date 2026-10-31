@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dmopuhc7yy633"]
+
+[ext_resource type="Texture2D" uid="uid://cylb83smfdkyv" path="res://Assets/spr_meteor_small.png" id="1_28p2s"]
+[ext_resource type="Script" uid="uid://bfh58yg1drmdm" path="res://Scripts/shooterboy.gd" id="1_ovcve"]
+
+[node name="Area2D" type="Area2D" unique_id=1550408698]
+script = ExtResource("1_ovcve")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1091422615]
+texture = ExtResource("1_28p2s")

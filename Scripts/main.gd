@@ -19,6 +19,7 @@ extends Node2D
 @onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
 @onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
 @onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDouble
+@onready var pierce = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Pierce
 var combo = 1
 var combo_timer
 var shoot_sound = preload("res://Assets/shoot.wav")
@@ -52,6 +53,7 @@ var hitstop_active = false
 var bomb_cd_cost = 300
 var bomb_dmg_cost = 250
 var bomb_twice_cost = 1500
+var pierce_cost = 500
 var base_max_health = 5
 var offline_level = 0
 var offline_cost = 1000
@@ -119,6 +121,7 @@ func _ready():
 	bomb_damage.pressed.connect(buy_bomb_damage)
 	bomb_double.pressed.connect(buy_bomb_double)
 	offline_btn.pressed.connect(buy_offline_upgrade)
+	pierce.pressed.connect(buy_pierce)
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
@@ -193,6 +196,14 @@ func spawn_asteroid():
 	var big_chance = min(0.3, wave * 0.04)
 	var medium_chance = min(0.4, wave * 0.1)
 	var base_value = 2
+	if randf() < 0.15 and wave > 3:
+		var enemy = preload("res://Scenes/Shooterboy.tscn").instantiate()
+		add_child(enemy)
+		enemy.position = Vector2(randf_range(100, screen.x - 100), -50)
+		to_spawn -= 1
+		if to_spawn <= 0:
+			spawn_timer.stop()
+		return
 	if roll < big_chance:
 		asteroid.tint = Color(0.6, 0.0, 0.13, 1.0)
 		asteroid.size = 4.0
@@ -322,7 +333,14 @@ func update_ui():
 
 	damage.text = "Damage +1\n$" + str(damage_cost)
 	damage.disabled = money < damage_cost
-
+	
+	if player.bullet_pierce < 3:
+		pierce.text = "Piercing Shot\n$" + str(pierce_cost)
+		pierce.disabled = money < pierce_cost
+	else:
+		pierce.text = "Pierce is MAX"
+		pierce.disabled = true
+	
 	if base_max_health < 15:
 		maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
 		maxhealth.disabled = money < max_health_cost
@@ -398,6 +416,14 @@ func buy_damage():
 		player.base_bullet_damage += 1
 		damage_cost = int(damage_cost * 1.8)
 		player.recalculate()
+		update_ui()
+		save_game()
+
+func buy_pierce():
+	if player.bullet_pierce < 3 and money >= pierce_cost:
+		money -= pierce_cost
+		player.bullet_pierce += 1
+		pierce_cost = int(pierce_cost * 3)
 		update_ui()
 		save_game()
 
@@ -564,6 +590,7 @@ func save_game():
 		"offline_level": offline_level,
 		"offline_cost": offline_cost,
 		"total_money_earned": total_money_earned,
+		"bullet_pierce": player.bullet_pierce,
 		"last_played": Time.get_unix_time_from_system()
 	}
 
@@ -605,6 +632,7 @@ func load_game():
 	offline_cost = int(data.get("offline_cost", 1000))
 	last_played_time = float(data.get("last_played", 0))
 	total_money_earned = int(data.get("total_money_earned", 0))
+	player.bullet_pierce = int(data.get("bullet_pierce", 0))
 	if last_played_time > 0 and offline_level > 0:
 		var current_time = Time.get_unix_time_from_system()
 		var seconds_away = int(current_time - last_played_time)
