@@ -38,7 +38,6 @@ var oops_messages = [
 	"You lived a good life",
 	"Silly goose! You're supposed to live!",
 	"WASTED",
-	"this message is co-sponsored by nord vpn and raid shadow legends",
 	
 ]
 
