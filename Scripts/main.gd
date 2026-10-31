@@ -20,6 +20,35 @@ extends Node2D
 @onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
 @onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDouble
 @onready var pierce = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Pierce
+@onready var death_menu = $DeathMenu
+@onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
+@onready var title_label = $DeathMenu/ColorRect/VBoxContainer/TitleLabel
+@onready var embarrassing_label = $DeathMenu/ColorRect/VboxContainer/Embarrassing
+
+var oops_messages = [
+	"Oops",
+	"You Died.",
+	":(",
+	"???",
+	"Well that was silly.",
+	"Defeat",
+	"Try Harder Next Time",
+	"Did you get that on camera?",
+	"What did you do that for?",
+	"You lived a good life",
+]
+
+var insult_messages = [
+	"Have you tried dodging?",
+	"Now thats just humiliating",
+	"Thats all you can do? ;-;",
+	"Who writes these messages?",
+	"Whelp",
+	"Better luck next time!",
+	"you gave it your all.",
+	
+]
+
 var combo = 1
 var combo_timer
 var shoot_sound = preload("res://Assets/shoot.wav")
@@ -59,8 +88,6 @@ var offline_level = 0
 var offline_cost = 1000
 var last_played_time = 0
 var total_money_earned = 0
-@onready var death_menu = $DeathMenu
-@onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
 
 func start_next_wave():
 	boss_spawned = false
@@ -269,6 +296,13 @@ func reset_combo():
 	combo = 1
 	update_ui()
 
+func flash_screen(color = Color.WHITE):
+	var flash = $CanvasLayer/FlashScreen
+	flash.color = color
+	flash.modulate.a = 0.4
+	var t = create_tween() # finally know what tween means now lol
+	t.tween_property(flash, "modulate:a", 0.0, 0.1)
+
 func recalculate_max_health():
 	var ship_hp_mult = Ships.DATA[selected_ship]["shipperk"].get("max_health", 1.0)
 	max_health = int(base_max_health * ship_hp_mult)
@@ -281,6 +315,7 @@ func take_damage(amount):
 	health -= amount
 	play_sound(hurt_sound)
 	shake(15.0, 0.3)
+	flash_screen(Color.RED)
 	if health <= 0:
 		health = 0
 		game_over = true
@@ -291,6 +326,8 @@ func take_damage(amount):
 		save_game()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		death_menu.visible = true
+		title_label.text = oops_messages.pick_random()
+		embarrassing_label.text = insult_messages.pick_random()
 		stats_label.text = "Total Money Earned: $" + str(total_money_earned) + "\n\nWaves Survived: " + str(wave)
 	update_ui()
 

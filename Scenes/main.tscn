@@ -220,6 +220,14 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "BOSS"
 
+[node name="FlashScreen" type="ColorRect" parent="CanvasLayer" unique_id=31431601]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1820921662]
 anchor_mode = 0
 
