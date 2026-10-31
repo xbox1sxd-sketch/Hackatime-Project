@@ -23,6 +23,13 @@ func _ready():
 	
 func _process(delta):
 	rotation += spin * delta
+	if is_boss and modulate == Color.RED and randf() < 0.02:
+		var b = preload("res://Scenes/Bullet.tscn").instantiate()
+		b.speed = 400
+		b.damage = 3
+		get_parent().add_child(b)
+		b.global_position = global_position
+		b.global_rotation = PI / 2
 	position.x = clamp(position.x + drift * delta, 30, get_viewport_rect().size.x - 30)
 	position.y += speed * delta
 	if position.y > get_viewport_rect().size.y + 50:
@@ -109,6 +116,15 @@ func take_hit(amount, hit_pos = null):
 	health -= amount
 	if is_boss:
 		get_parent().update_boss_health(health)
+	if is_boss and health <= start_health / 2.0 and modulate != Color.RED:
+		modulate = Color.RED
+		tint = Color.RED
+		speed += 60
+		spin = 6.0
+		get_parent().flash_screen(Color.MAGENTA)
+		get_parent().shake(20.0, 0.5)
+		get_parent().update_boss_health(health)
+		
 	show_damage_number(amount, is_crit)
 	if health <= 0:
 		split()
