@@ -11,6 +11,8 @@ var drift = 0.0
 var start_health = 1
 var tint = Color.WHITE
 var is_boss = false
+var shoot_timer = 2.0
+var spawn_timer = 4.0
 
 
 func _ready():
@@ -23,19 +25,41 @@ func _ready():
 	
 func _process(delta):
 	rotation += spin * delta
-	if is_boss and modulate == Color.RED and randf() < 0.02:
-		var b = preload("res://Scenes/Bullet.tscn").instantiate()
-		b.speed = 400
-		b.damage = 3
-		get_parent().add_child(b)
-		b.global_position = global_position
-		b.global_rotation = PI / 2
+	if is_boss:
+		shoot_timer -= delta
+		if shoot_timer <= 0:
+			shoot_at_player()
+			shoot_timer = 1.0 if modulate == Color.RED else 2.5
+		spawn_timer -= delta
+		if spawn_timer <= 0:
+			spawn_minion()
+			spawn_timer = 2.5 if modulate == Color.RED else 5.0
 	position.x = clamp(position.x + drift * delta, 30, get_viewport_rect().size.x - 30)
 	position.y += speed * delta
 	if position.y > get_viewport_rect().size.y + 50:
 		get_parent().take_damage(damage)
 		queue_free()
-		
+
+func shoot_at_player():
+	var b = preload("res://Scenes/Bullet.tscn").instantiate()
+	b.speed = 350
+	b.damage = 2
+	get_parent().add_child(b)
+	b.global_position = global_position
+	var dir = (get_parent().player.global_position - global_position).normalize
+	b.global_rotation = dir.angle()
+
+func spawn_minion():
+	var ast = get_parent().asteroid_scene.instantiate()
+	ast.tint = tint
+	ast.size = 1.5
+	ast.health = int(3 + get_parent().get_level() * 0.5)
+	ast.speed = 200
+	ast.damage = 1
+	ast.value = 2
+	ast.position = position + Vector2(randf_range(-100, 100), 150)
+	get_parent().call_deferred("add_child", ast)
+
 func _on_area_entered(area):
 	if is_queued_for_deletion():
 		return
@@ -119,8 +143,8 @@ func take_hit(amount, hit_pos = null):
 	if is_boss and health <= start_health / 2.0 and modulate != Color.RED:
 		modulate = Color.RED
 		tint = Color.RED
-		speed += 60
-		spin = 6.0
+		speed = 25
+		spin = 2.0
 		get_parent().flash_screen(Color.MAGENTA)
 		get_parent().shake(20.0, 0.5)
 		get_parent().update_boss_health(health)
