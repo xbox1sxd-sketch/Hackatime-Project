@@ -23,7 +23,7 @@ extends Node2D
 @onready var death_menu = $DeathMenu
 @onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
 @onready var title_label = $DeathMenu/ColorRect/VBoxContainer/TitleLabel
-@onready var embarrassing_label = $DeathMenu/ColorRect/VboxContainer/Embarrassing
+@onready var embarrassing_label = $DeathMenu/ColorRect/VBoxContainer/Embarrassing
 
 var oops_messages = [
 	"Oops",
@@ -36,6 +36,10 @@ var oops_messages = [
 	"Did you get that on camera?",
 	"What did you do that for?",
 	"You lived a good life",
+	"Silly goose! You're supposed to live!",
+	"WASTED",
+	"this message is co-sponsored by nord vpn and raid shadow legends",
+	
 ]
 
 var insult_messages = [
@@ -46,6 +50,7 @@ var insult_messages = [
 	"Whelp",
 	"Better luck next time!",
 	"you gave it your all.",
+	"As Hornet once said, get gud"
 	
 ]
 

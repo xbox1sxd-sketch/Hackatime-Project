@@ -274,6 +274,7 @@ vertical_alignment = 1
 [node name="Embarrassing" type="Label" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=454720438]
 layout_mode = 2
 text = "Now thats just humiliating :p"
+horizontal_alignment = 1
 
 [node name="Restart" type="Button" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=2109502372]
 layout_mode = 2
