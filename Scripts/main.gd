@@ -274,6 +274,8 @@ func take_damage(amount):
 		health = 0
 		game_over = true
 		spawn_timer.stop()
+		get_tree().paused = true
+		money_label.visible = false
 		best_wave = max(best_wave, wave)
 		save_game()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE

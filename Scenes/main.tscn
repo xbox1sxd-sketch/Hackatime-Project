@@ -222,13 +222,12 @@ anchor_mode = 0
 [node name="DeathMenu" type="CanvasLayer" parent="." unique_id=242647086]
 
 [node name="ColorRect" type="ColorRect" parent="DeathMenu" unique_id=2059777145]
-offset_left = 485.0
-offset_top = 247.0
-offset_right = 667.0
-offset_bottom = 247.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.008202032, 0.008202021, 0.0082020275, 1)
+color = Color(0, 0, 0, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DeathMenu/ColorRect" unique_id=1606427473]
 layout_mode = 1
@@ -259,6 +258,10 @@ size_flags_horizontal = 4
 text = "Total Money Earned: $0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Embarrassing" type="Label" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=454720438]
+layout_mode = 2
+text = "Now that is just humiliating."
 
 [node name="Restart" type="Button" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=2109502372]
 layout_mode = 2

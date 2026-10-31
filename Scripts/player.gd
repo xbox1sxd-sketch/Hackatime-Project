@@ -51,7 +51,7 @@ func start_bomb_charge():
 
 
 func _process(delta):
-	if get_parent().menu_open:
+	if get_parent().menu_open or get_parent().game_over:
 		return
 		#finally using lerp lol
 	global_position = global_position.lerp(target_position, 20 * delta)
@@ -59,7 +59,8 @@ func _process(delta):
 		shoot()
 
 func _input(event):
-	if get_tree().paused: return
+	if get_tree().paused or get_parent().game_over:
+		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		target_position = target_position + event.relative
 		var screen = get_viewport_rect().size
