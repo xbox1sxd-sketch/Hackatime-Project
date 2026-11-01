@@ -137,7 +137,6 @@ func make_muzzle_flash(pos):
 	get_parent().add_child(flash)
 	flash.global_position = pos
 	
-	
 func shoot():
 	if get_tree().paused:
 		return

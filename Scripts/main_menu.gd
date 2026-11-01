@@ -22,6 +22,7 @@ func _ready():
 	_build_ship_buttons()
 
 func start_new_game():
+	var save_path = "user://save.json"
 	if FileAccess.file_exists("user://save.json"):
 		DirAccess.remove_absolute("user://save.json")
 	start_game()
@@ -42,12 +43,13 @@ func _build_ship_buttons():
 			if data != null:
 				best_wave = int(data.get("best_wave", 0))
 				selected_ship = str(data.get("selected_ship", "ship0"))
+		file.close()
 	if ship_preview != null:
 		ship_preview.self_modulate = Ships.DATA[selected_ship]["color"]
 	for id in Ships.DATA:
 		var ship = Ships.DATA[id]
 		var label = ship["name"]
-		if (ship["unlock_wave"]) > best_wave:
+		if ship["unlock_wave"] > best_wave:
 			label += " (w" + str(ship["unlock_wave"]) +")"
 		elif id == selected_ship:
 			label = "✓" + label
@@ -72,6 +74,7 @@ func _select_ship(id):
 	data["selected_ship"] = id
 	var f = FileAccess.open("user://save.json", FileAccess.WRITE)
 	f.store_string(JSON.stringify(data))
+	f.close()
 	if ship_preview != null:
 		ship_preview.self_modulate = Ships.DATA[id]["color"]
 	_build_ship_buttons()
@@ -93,7 +96,7 @@ func play_ui_sound():
 func delete_save_data():
 	var save_path = "user://save.json"
 	if FileAccess.file_exists(save_path):
-		DirAccess.remove_absolute(save_path)
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
 	reset.text = "DATA RESET"
 	reset.disabled = true
 	_build_ship_buttons()

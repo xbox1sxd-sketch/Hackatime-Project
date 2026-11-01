@@ -2,6 +2,7 @@ extends Area2D
 var damage = 1
 var speed = 1200
 var pierce = 0
+var is_player_bullet = false
 
 func _ready():
 	add_to_group("bullets")
