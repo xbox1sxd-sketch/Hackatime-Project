@@ -375,15 +375,14 @@ func update_ui():
 	
 	var shots_per_second = 1.0 / player.fire_delay
 	var dps = int(player.bullet_damage * player.bullet_count * shots_per_second)
-	money_label.text = final_text + status + "\nHealth" + str(health) + "/" + str(max_health) + "/nMoney: $" + make_smaller(money) + "\nDPS:" + make_smaller(dps)
+	money_label.text = final_text + status + "\nHealth" + str(health) + "/" + str(max_health) + "\nMoney: $" + make_smaller(money) + "\nDPS:" + make_smaller(dps)
 
 		
 	firerate.text = "Faster Fire\n$" + make_smaller(fire_rate_cost)
 	firerate.disabled = money < fire_rate_cost
 		
-	if player.bullet_count < 5:
-		multishot.text = "Multishot\n$" + make_smaller(multishot_cost)
-		multishot.disabled = money < multishot_cost
+	multishot.text = "Multishot\n$" + make_smaller(multishot_cost)
+	multishot.disabled = money < multishot_cost
 
 		
 	if health < max_health and not game_over:
@@ -396,9 +395,8 @@ func update_ui():
 	damage.text = "Damage +1\n$" + make_smaller(damage_cost)
 	damage.disabled = money < damage_cost
 	
-	if player.bullet_pierce:
-		pierce.text = "Piercing Shot\n$" + make_smaller(pierce_cost)
-		pierce.disabled = money < pierce_cost
+	pierce.text = "Piercing Shot\n$" + make_smaller(pierce_cost)
+	pierce.disabled = money < pierce_cost
 
 	
 	if not auto_fire_enabled:
@@ -408,17 +406,13 @@ func update_ui():
 		auto_fire.text = "Auto Fire Unlocked"
 		auto_fire.disabled = true
 	
-	if base_max_health:
-		maxhealth.text = "Max Health +1\n$" + make_smaller(max_health_cost)
-		maxhealth.disabled = money < max_health_cost
+	maxhealth.text = "Max Health +1\n$" + make_smaller(max_health_cost)
+	maxhealth.disabled = money < max_health_cost
 
 
-	if player.bomb_cooldown > 2.0:
-		bomb_cooldown.text = "Bomb Cooldown -1s\n$" + make_smaller(bomb_cd_cost)
-		bomb_cooldown.disabled = money < bomb_cd_cost
-	else:
-		bomb_cooldown.text = "NO MORE UPGRADES BUD"
-		bomb_cooldown.disabled = true
+	bomb_cooldown.text = "Bomb Cooldown -1s\n$" + make_smaller(bomb_cd_cost)
+	bomb_cooldown.disabled = money < bomb_cd_cost
+
 	bomb_damage.text = "Bomb Damage +3\n$" + make_smaller(bomb_dmg_cost)
 	bomb_damage.disabled = money < bomb_dmg_cost
 
@@ -431,14 +425,12 @@ func update_ui():
 	if offline_level == 0:
 		offline_btn.text = "Unlock Offline Money\n$" + make_smaller(offline_cost)
 	else:
-		offline_btn.text = "Offline Money" + make_smaller(offline_level) + "/sec\n$" + str(offline_cost)
+		offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + str(offline_cost)
 	offline_btn.disabled = money < offline_cost
-	if player.base_crit_chance < 0.5:
-		crit.text = "Crit Chance % +5\n$" + make_smaller(crit_chance_cost)
-		crit.disabled = money < crit_chance_cost
-	else:
-		crit.text = "Crit Chance Max"
-		crit.disabled = true
+	
+	crit.text = "Crit Chance % +5\n$" + make_smaller(crit_chance_cost)
+	crit.disabled = money < crit_chance_cost
+
 	if wave >= 20:
 		prestige.text = "PRESTIGE (10% Money)\nLevel: " + make_smaller(prestige_level)
 		prestige.disabled = false
@@ -535,7 +527,7 @@ func buy_fire_rate():
 	if money >= fire_rate_cost:
 		money -= fire_rate_cost
 		upgrades_bought += 1
-		player.base_fire_delay = max(0.1, player.base_fire_delay * 0.85)
+		player.base_fire_delay = max(0.01, player.base_fire_delay * 0.85)
 		fire_rate_cost = int(fire_rate_cost * 2)
 		player.recalculate()
 		update_ui()
