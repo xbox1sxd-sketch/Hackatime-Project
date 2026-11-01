@@ -36,7 +36,7 @@ func _ready():
 func recalculate():
 	var ship_stats = Ships.DATA[get_parent().selected_ship]["shipperk"]
 	var fr_mult = ship_stats.get("fire_rate", 1.0)
-	fire_delay = max(base_fire_delay / fr_mult, 0.05)
+	fire_delay = max(base_fire_delay / fr_mult, 0.01)
 	var dmg_mult = ship_stats.get("damage", 1.0)
 	bullet_damage = int(base_bullet_damage * dmg_mult)
 	var crit_add = ship_stats.get("crit_chance", 0.0)

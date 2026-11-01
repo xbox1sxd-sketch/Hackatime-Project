@@ -42,6 +42,7 @@ offset_bottom = 23.0
 [node name="GemLabel" type="Label" parent="CanvasLayer" unique_id=1102207386]
 offset_right = 40.0
 offset_bottom = 23.0
+theme_override_font_sizes/font_size = 28
 
 [node name="Pausemenu" type="Control" parent="CanvasLayer" unique_id=1792250218]
 process_mode = 3
@@ -313,3 +314,31 @@ horizontal_alignment = 1
 [node name="Restart" type="Button" parent="DeathMenu/ColorRect/VBoxContainer" unique_id=2109502372]
 layout_mode = 2
 text = "Care to continue?"
+
+[node name="BugReportMenu" type="CanvasLayer" parent="." unique_id=1810426170]
+
+[node name="ColorRect" type="ColorRect" parent="BugReportMenu" unique_id=482324087]
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 0.9098039)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BugReportMenu/ColorRect" unique_id=682267820]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="BugReportMenu/ColorRect/VBoxContainer" unique_id=1395313199]
+layout_mode = 2
+text = "Report a bug
+"
+
+[node name="BugText" type="TextEdit" parent="BugReportMenu/ColorRect/VBoxContainer" unique_id=1871453436]
+layout_mode = 2
+text = "BugText
+"
+
+[node name="SubmitBtn" type="Button" parent="BugReportMenu/ColorRect/VBoxContainer" unique_id=630412691]
+layout_mode = 2
+
+[node name="CloseBtn" type="Button" parent="BugReportMenu/ColorRect/VBoxContainer" unique_id=797192101]
+layout_mode = 2

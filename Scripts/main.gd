@@ -32,7 +32,10 @@ extends Node2D
 @onready var gem_shop = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer
 @onready var money_tab = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons/MoneyTab
 @onready var gem_tab = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons/GemTab
-
+@onready var bug_menu = $BugReportMenu
+@onready var bug_text = $BugReportMenu/ColorRect/VBoxContainer/BugText
+@onready var submit_btn = $BugReportMenu/ColorRect/VBoxContainer/SubmitBtn
+@onready var close_bug_btn = $BugReportMenu/ColorRect/VBoxContainer/CloseBtn
 
 var oops_messages = [
 	"Oops",
@@ -108,6 +111,7 @@ var explosive_unlocked = false
 var explosive_cost = 5
 var lifesteal_level = 0
 var lifesteal_cost = 10
+var webhook_url = "https://discord.com/api/webhooks/1566582322461937664/rbh4PjFsaXPYugeN7V7ysdBzdPK4JLmf_GFrlkGHji1rdHPEtFU6XYRyqr6XcnwUmiYe"
 
 func start_next_wave():
 	boss_spawned = false
@@ -137,7 +141,6 @@ func _ready():
 	money_label.position = Vector2(20, 20)
 	money_label.add_theme_font_size_override("font_size", 28)
 	gem_label.position = Vector2(20, -10)
-	gem_label.add_theme_font_size_override("font_size", 28)
 	spawn_timer = Timer.new()
 	spawn_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
 	spawn_timer.timeout.connect(spawn_asteroid)
@@ -177,6 +180,9 @@ func _ready():
 	lifesteal.pressed.connect(buy_lifesteal)
 	money_tab.pressed.connect(switch_shop_tab.bind(0))
 	gem_tab.pressed.connect(switch_shop_tab.bind(1))
+	submit_btn.pressed.connect(send_bug_report)
+	close_bug_btn.pressed.connect(func(): bug_menu.visible = false)
+	bug_menu.visible = false
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
@@ -192,6 +198,20 @@ func restart_game():
 func return_to_menu():
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
+
+func send_bug_report():
+	var http = HTTPRequest.new()
+	add_child(http)
+	var message = bug_text.text + "\n\n*Wave: " + str(wave)
+	var payload = {"content": "new bug report!:\n" + message}
+	var json_payload = JSON.stringify(payload)
+	http.request(webhook_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, json_payload)
+	submit_btn.text = "Bug Report Sent!"
+	await get_tree().create_timer(1.0, true, false, true).timeout
+	submit_btn.text = "submit"
+	bug_text.text = ""
+	bug_menu.visible = false
+	http.queue_free()
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -671,6 +691,7 @@ func do_prestige():
 	base_max_health = 5
 	auto_fire_enabled = false
 	player.auto_fire = false
+	player.bullet_pierce = 0
 	recalculate_max_health()
 	health = max_health
 	toggle_upgrade_menu()

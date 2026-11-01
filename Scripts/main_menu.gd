@@ -10,12 +10,23 @@ extends Control
 @onready var controls_btn = $VBoxContainer/ControlsBtn
 @onready var controls_menu = $ControlsMenu
 @onready var back_btn = $ControlsMenu/ColorRect/VBoxContainer/Backbtn
+@onready var bug_btn = $BugReportBtn
+@onready var bug_menu = $BugReportMenu
+@onready var bug_text = $BugReportMenu/ColorRect/VBoxContainer/BugText
+@onready var submit_btn = $BugReportMenu/ColorRect/VBoxContainer/SubmitBtn
+@onready var close_bug_btn = $BugReportMenu/ColorRect/VBoxContainer/CloseBtn
+var webhook_url = "https://discord.com/api/webhooks/1566582322461937664/rbh4PjFsaXPYugeN7V7ysdBzdPK4JLmf_GFrlkGHji1rdHPEtFU6XYRyqr6XcnwUmiYe"
+
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	new_game.pressed.connect(start_new_game)
 	resume.pressed.connect(start_game)
 	controls_btn.pressed.connect(show_controls)
 	back_btn.pressed.connect(hide_controls)
+	bug_menu.visible = false
+	bug_btn.pressed.connect(func(): bug_menu.visible = true)
+	close_bug_btn.pressed.connect(func(): bug_menu.visible = false)
+	submit_btn.pressed.connect(send_bug_report)
 	controls_menu.visible = false
 	
 	$VBoxContainer/Quit.pressed.connect(quit_game)
@@ -57,14 +68,17 @@ func _build_ship_buttons():
 		if ship["unlock_wave"] > best_wave:
 			label += " (w" + str(ship["unlock_wave"]) +")"
 		elif id == selected_ship:
-			label = "✓" + label
+			label = "*" + label
 		var btn = Button.new()
 		btn.text = label
 		btn.tooltip_text = ship["text"]
 		if ship["unlock_wave"] > best_wave:
 			btn.disabled = true
-		btn.add_theme_color_override("font_color", Color(0.5,0.5, 0.5))
-		btn.add_theme_color_override("font_color", ship["color"])
+		if ship["unlock_wave"] > best_wave:
+			btn.disabled = true
+			btn.add_theme_color_override("font_color", Color(0.5,0.5, 0.5))
+		else:
+			btn.add_theme_color_override("font_color", ship["color"])
 		btn.pressed.connect(_select_ship.bind(id))
 		ship_row.add_child(btn)
 
@@ -84,6 +98,19 @@ func _select_ship(id):
 		ship_preview.self_modulate = Ships.DATA[id]["color"]
 	_build_ship_buttons()
 	
+
+func send_bug_report():
+	var http = HTTPRequest.new()
+	add_child(http)
+	var payload = {"content": "new bug report!:\n" + bug_text.text}
+	var json_payload = JSON.stringify(payload)
+	http.request(webhook_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, json_payload)
+	submit_btn.text = "Bug Report Sent!"
+	await get_tree().create_timer(1.0, true, false, true).timeout
+	submit_btn.text = "submit"
+	bug_text.text = ""
+	bug_menu.visible = false
+	http.queue_free()
 
 func start_game():
 	await get_tree().create_timer(0.1).timeout #ai was used for this line
@@ -106,7 +133,7 @@ func play_ui_sound():
 
 func delete_save_data():
 	var save_path = "user://save.json"
-	if FileAccess.file_exists(save_path):
+	if FileAccess.file_exists("user://save.json"):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(save_path))
 	reset.text = "DATA RESET"
 	reset.disabled = true
