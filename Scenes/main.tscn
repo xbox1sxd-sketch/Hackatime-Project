@@ -10,13 +10,6 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjvhh"]
 bg_color = Color(0.17254902, 0.17254902, 0.17254902, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6bp64"]
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 5
-
 [node name="Main" type="Node2D" unique_id=1246735731]
 process_mode = 3
 script = ExtResource("1_bo1nx")
@@ -132,7 +125,6 @@ text = "prestige (wave 20 required.)"
 [node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=966963763]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("StyleBoxFlat_6bp64")
 text = "Upgrade"
 
 [node name="MultiShot" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=252264017]

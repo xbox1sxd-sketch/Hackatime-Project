@@ -25,6 +25,7 @@ extends Node2D
 @onready var title_label = $DeathMenu/ColorRect/VBoxContainer/TitleLabel
 @onready var embarrassing_label = $DeathMenu/ColorRect/VBoxContainer/Embarrassing
 
+
 var oops_messages = [
 	"Oops",
 	"You Died.",
@@ -137,7 +138,7 @@ func _ready():
 	pause_menu.visible = false
 	upgrade_panel.visible = false
 	upgrade_prompt.visible = true
-	$CanvasLayer/Pausemenu/VBoxContainer/Close.pressed.connect(toggle_pause)
+	$CanvasLayer/Pausemenu/VBoxContainer/Close.pressed.connect(return_to_menu)
 	$CanvasLayer/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
 	$CanvasLayer/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
 	$CanvasLayer/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
@@ -163,6 +164,10 @@ func _ready():
 func restart_game():
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+func return_to_menu():
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
 
 func _notification(what):
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

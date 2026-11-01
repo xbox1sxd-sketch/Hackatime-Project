@@ -45,7 +45,7 @@ func shoot_at_player():
 	b.speed = 350
 	b.damage = 2
 	get_parent().add_child(b)
-	b.global_position = global_position
+	b.global_position = global_position + Vector2(0, 60)
 	var dir = (get_parent().player.global_position - global_position).normalized()
 	b.global_rotation = dir.angle()
 
@@ -63,7 +63,7 @@ func spawn_minion():
 func _on_area_entered(area):
 	if is_queued_for_deletion():
 		return
-	if area.is_in_group("bullets"):
+	if area.is_in_group("bullets") and area.is_player_bullet:
 		var hit_pos = area.global_position
 		if area.pierce > 0:
 			area.pierce -=1
