@@ -1,33 +1,37 @@
 extends Node2D
 @onready var upgrade_sound = $CanvasLayer/UpgradeSound
-@onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/FireRate
-@onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/MultiShot
-@onready var repair = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Repair
-@onready var damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Damage
-@onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/MaxHealth
-@onready var crit = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Crit
+@onready var firerate = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/FireRate
+@onready var multishot = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/MultiShot
+@onready var repair = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Repair
+@onready var damage = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Damage
+@onready var maxhealth = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/MaxHealth
+@onready var crit = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Crit
 @onready var pause_menu = $CanvasLayer/Pausemenu
 @onready var camera = $Camera2D
 @onready var upgrade_panel = $CanvasLayer/PanelContainer
 @onready var upgrade_prompt = $CanvasLayer/UpgradeMenuPrompt
-@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Prestige
+@onready var prestige: Button = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Prestige
 @onready var ui_sound = $CanvasLayer/UISound
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
-@onready var auto_fire = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/AutoFire
-@onready var offline_btn = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/OfflineUpgrade
+@onready var auto_fire = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/AutoFire
+@onready var offline_btn = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/OfflineUpgrade
 @onready var boss_health_bar = $CanvasLayer/BossHealthBar
-@onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
-@onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDamage
-@onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombDouble
-@onready var pierce = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Pierce
+@onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/BombCooldown
+@onready var bomb_damage = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/BombDamage
+@onready var bomb_double = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/BombDouble
+@onready var pierce = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Pierce
 @onready var death_menu = $DeathMenu
 @onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
 @onready var title_label = $DeathMenu/ColorRect/VBoxContainer/TitleLabel
 @onready var embarrassing_label = $DeathMenu/ColorRect/VBoxContainer/Embarrassing
 @onready var gem_label = $CanvasLayer/GemLabel
-@onready var explosive = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Explosive
-@onready var lifesteal = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Lifesteal
+@onready var explosive = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer/Explosive
+@onready var lifesteal = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer/Lifesteal
+@onready var money_shop = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer
+@onready var gem_shop = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer
+@onready var money_tab = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons/MoneyTab
+@onready var gem_tab = $CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons/GemTab
 
 
 var oops_messages = [
@@ -153,7 +157,8 @@ func _ready():
 	$CanvasLayer/Pausemenu/VBoxContainer/Resume.pressed.connect(toggle_pause)
 	$CanvasLayer/Pausemenu/VBoxContainer/Restart.pressed.connect(func():get_tree().paused = false; get_tree().reload_current_scene())
 	$CanvasLayer/Pausemenu/VBoxContainer/Quit.pressed.connect(func(): get_tree().quit())
-	$CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
+	$CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
+	$CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer/Closeshop.pressed.connect(toggle_upgrade_menu)
 	firerate.pressed.connect(buy_fire_rate)
 	multishot.pressed.connect(buy_multishot)
 	repair.pressed.connect(buy_repair)
@@ -168,11 +173,14 @@ func _ready():
 	auto_fire.pressed.connect(buy_auto_fire)
 	explosive.pressed.connect(buy_explosive)
 	lifesteal.pressed.connect(buy_lifesteal)
+	money_tab.pressed.connect(switch_shop_tab.bind(0))
+	gem_tab.pressed.connect(switch_shop_tab.bind(1))
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
 	if health <= 0:
 		health = max_health
+	switch_shop_tab(0)
 	start_next_wave()
 
 func restart_game():
@@ -616,6 +624,18 @@ func play_sound(stream):
 	add_child(p)
 	p.finished.connect(p.queue_free)
 	p.play()
+
+func switch_shop_tab(tab):
+	if tab == 0:
+		money_shop.visible = true
+		gem_shop.visible = false
+		money_tab.disabled = true
+		gem_tab.disabled = false
+	else:
+		money_shop.visible = false
+		gem_shop.visible = true
+		money_tab.disabled = false
+		gem_tab.disabled = true
 
 func get_level():
 	return wave + upgrades_bought * 0.5

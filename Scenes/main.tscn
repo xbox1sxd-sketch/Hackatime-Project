@@ -112,87 +112,114 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=1834014433]
+[node name="ShopLayout" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer" unique_id=474844556]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer" unique_id=521746888]
+[node name="TabButtons" type="HBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout" unique_id=874619121]
+layout_mode = 2
+
+[node name="MoneyTab" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons" unique_id=2036285854]
+layout_mode = 2
+text = "money"
+
+[node name="GemTab" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/TabButtons" unique_id=71242927]
+layout_mode = 2
+text = "Gems"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout" unique_id=1834014433]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MoneyShopContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer" unique_id=521746888]
 custom_minimum_size = Vector2(350, 500)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Prestige" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1340694388]
+[node name="Prestige" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=1340694388]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "prestige (wave 20 required.)"
 
-[node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=966963763]
+[node name="FireRate" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=966963763]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="MultiShot" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=252264017]
+[node name="MultiShot" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=252264017]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="Repair" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=565034022]
+[node name="Repair" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=565034022]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="Damage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=2028639491]
+[node name="Damage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=2028639491]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="MaxHealth" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=556165544]
+[node name="MaxHealth" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=556165544]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="Crit" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=8218040]
+[node name="Crit" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=8218040]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="BombCooldown" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1511903670]
+[node name="BombCooldown" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=1511903670]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="BombDamage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=769317004]
+[node name="BombDamage" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=769317004]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="BombDouble" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=401052261]
+[node name="BombDouble" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=401052261]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Upgrade"
 
-[node name="OfflineUpgrade" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1505741055]
+[node name="OfflineUpgrade" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=1505741055]
 layout_mode = 2
 
-[node name="Pierce" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=625479318]
-layout_mode = 2
-text = "Upgrade"
-
-[node name="AutoFire" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1801513908]
+[node name="Pierce" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=625479318]
 layout_mode = 2
 text = "Upgrade"
 
-[node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1698430788]
+[node name="AutoFire" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=1801513908]
+layout_mode = 2
+text = "Upgrade"
+
+[node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/MoneyShopContainer" unique_id=1698430788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Close shop (M)
 "
 
-[node name="Explosive" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1733788161]
+[node name="GemShopContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer" unique_id=760912745]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Lifesteal" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer" unique_id=843723451]
 layout_mode = 2
 
-[node name="Lifesteal" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=843723451]
+[node name="Explosive" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer" unique_id=1733788161]
 layout_mode = 2
+
+[node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ShopLayout/ScrollContainer/GemShopContainer" unique_id=721009120]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Close shop (M)
+"
 
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
 offset_left = 823.0
