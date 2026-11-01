@@ -25,6 +25,9 @@ extends Node2D
 @onready var stats_label = $DeathMenu/ColorRect/VBoxContainer/StatsLabel
 @onready var title_label = $DeathMenu/ColorRect/VBoxContainer/TitleLabel
 @onready var embarrassing_label = $DeathMenu/ColorRect/VBoxContainer/Embarrassing
+@onready var gem_label = $CanvasLayer/GemLabel
+@onready var explosive = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Explosive
+@onready var lifesteal = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/Lifesteal
 
 
 var oops_messages = [
@@ -96,6 +99,11 @@ var last_played_time = 0
 var total_money_earned = 0
 var auto_fire_enabled = false
 var auto_fire_cost = 5000
+var gems = 0
+var explosive_unlocked = false
+var explosive_cost = 5
+var lifesteal_level = 0
+var lifesteal_cost = 10
 
 func start_next_wave():
 	boss_spawned = false
@@ -158,6 +166,8 @@ func _ready():
 	offline_btn.pressed.connect(buy_offline_upgrade)
 	pierce.pressed.connect(buy_pierce)
 	auto_fire.pressed.connect(buy_auto_fire)
+	explosive.pressed.connect(buy_explosive)
+	lifesteal.pressed.connect(buy_lifesteal)
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
@@ -287,6 +297,9 @@ func spawn_asteroid():
 
 func boss_reward():
 	health = min(max_health, health + 3)
+	
+	var gem_drop = 1 + int(wave / 10)
+	gems += gem_drop
 	save_game()
 	update_ui()
 
@@ -376,7 +389,7 @@ func update_ui():
 	var shots_per_second = 1.0 / player.fire_delay
 	var dps = int(player.bullet_damage * player.bullet_count * shots_per_second)
 	money_label.text = final_text + status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: $" + make_smaller(money) + "\nDPS: " + make_smaller(dps)
-
+	gem_label.text = "Gems: " + str(gems)
 		
 	firerate.text = "Faster Fire\n$" + make_smaller(fire_rate_cost)
 	firerate.disabled = money < fire_rate_cost
@@ -430,7 +443,16 @@ func update_ui():
 	
 	crit.text = "Crit Chance % +5\n$" + make_smaller(crit_chance_cost)
 	crit.disabled = money < crit_chance_cost
-
+	
+	if not explosive_unlocked:
+		explosive.text = "Explosive Bullets\n" + str(explosive_cost)
+		explosive.disabled = gems < explosive_cost
+	else:
+		explosive.text = "Explosive Bullets Unlocked"
+		explosive.disabled = true
+	lifesteal.text = "Lifesteal +1%\n" + str(lifesteal_cost)
+	lifesteal.disabled = gems < lifesteal_cost
+	
 	if wave >= 20:
 		prestige.text = "PRESTIGE (10% Money)\nLevel: " + make_smaller(prestige_level)
 		prestige.disabled = false
@@ -512,6 +534,21 @@ func buy_multishot():
 		upgrades_bought += 1
 		player.bullet_count += 1
 		multishot_cost = int(multishot_cost * 5)
+		update_ui()
+		save_game()
+
+func buy_explosive():
+	if gems >= explosive_cost and not explosive_unlocked:
+		gems -= explosive_cost
+		explosive_unlocked = true
+		update_ui()
+		save_game()
+
+func buy_lifesteal():
+	if gems >= lifesteal_cost:
+		gems -= lifesteal_cost
+		lifesteal_level += 1
+		lifesteal_cost = int(lifesteal_cost * 2.5)
 		update_ui()
 		save_game()
 
@@ -651,6 +688,10 @@ func save_game():
 		"total_money_earned": total_money_earned,
 		"bullet_pierce": player.bullet_pierce,
 		"auto_fire": auto_fire_enabled,
+		"gems": gems,
+		"explosive_unlocked": explosive_unlocked,
+		"lifesteal_level": lifesteal_level,
+		"lifesteal_cost": lifesteal_cost,
 		"last_played": Time.get_unix_time_from_system()
 	}
 
@@ -694,6 +735,10 @@ func load_game():
 	total_money_earned = int(data.get("total_money_earned", 0))
 	player.bullet_pierce = int(data.get("bullet_pierce", 0))
 	auto_fire_enabled = bool(data.get("auto_fire", false))
+	gems = int(data.get("gems", 0))
+	explosive_unlocked = bool(data.get("explosive_unlocked", false))
+	lifesteal_level = int(data.get("lifesteal_level", 0))
+	lifesteal_cost = int(data.get("lifesteal_cost", 10))
 	if auto_fire_enabled:
 		player.auto_fire = true
 	if last_played_time > 0 and offline_level > 0:

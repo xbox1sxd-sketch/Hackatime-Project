@@ -39,6 +39,10 @@ process_mode = 3
 offset_right = 40.0
 offset_bottom = 23.0
 
+[node name="GemLabel" type="Label" parent="CanvasLayer" unique_id=1102207386]
+offset_right = 40.0
+offset_bottom = 23.0
+
 [node name="Pausemenu" type="Control" parent="CanvasLayer" unique_id=1792250218]
 process_mode = 3
 layout_mode = 3
@@ -183,6 +187,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Close shop (M)
 "
+
+[node name="Explosive" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1733788161]
+layout_mode = 2
+
+[node name="Lifesteal" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=843723451]
+layout_mode = 2
 
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
 offset_left = 823.0

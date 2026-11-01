@@ -182,6 +182,10 @@ func on_hit():
 
 func die(killed_by_player):
 	if killed_by_player:
+		if get_parent().lifesteal_level > 0:
+			if randf() < (get_parent().lifesteal_level * 0.01):
+				get_parent().health = min(get_parent().max_health, get_parent().health + 1)
+				get_parent().update_ui()
 		if is_boss:
 			get_parent().boss_reward()
 		else:
