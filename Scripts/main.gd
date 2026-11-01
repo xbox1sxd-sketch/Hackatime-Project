@@ -375,7 +375,7 @@ func update_ui():
 	
 	var shots_per_second = 1.0 / player.fire_delay
 	var dps = int(player.bullet_damage * player.bullet_count * shots_per_second)
-	money_label.text = final_text + status + "\nHealth" + str(health) + "/" + str(max_health) + "\nMoney: $" + make_smaller(money) + "\nDPS:" + make_smaller(dps)
+	money_label.text = final_text + status + "\nHealth " + str(health) + "/" + str(max_health) + "\nMoney: $" + make_smaller(money) + "\nDPS: " + make_smaller(dps)
 
 		
 	firerate.text = "Faster Fire\n$" + make_smaller(fire_rate_cost)
@@ -425,7 +425,7 @@ func update_ui():
 	if offline_level == 0:
 		offline_btn.text = "Unlock Offline Money\n$" + make_smaller(offline_cost)
 	else:
-		offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + str(offline_cost)
+		offline_btn.text = "Offline Money" + str(offline_level) + "/sec\n$" + make_smaller(offline_cost)
 	offline_btn.disabled = money < offline_cost
 	
 	crit.text = "Crit Chance % +5\n$" + make_smaller(crit_chance_cost)
@@ -536,7 +536,7 @@ func buy_fire_rate():
 func buy_bomb_cooldown():
 	if money >= bomb_cd_cost:
 		money -= bomb_cd_cost
-		player.bomb_cooldown = max(2.0, player.bomb_cooldown - 1.0)
+		player.bomb_cooldown = max(0.1, player.bomb_cooldown - 1.0)
 		bomb_cd_cost = int(bomb_cd_cost * 1.5)
 		update_ui()
 		save_game()
