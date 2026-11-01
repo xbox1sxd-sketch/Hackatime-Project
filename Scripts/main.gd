@@ -476,7 +476,7 @@ func buy_damage():
 		save_game()
 
 func buy_pierce():
-	if player.bullet_pierce < 3 and money >= pierce_cost:
+	if money >= pierce_cost:
 		money -= pierce_cost
 		player.bullet_pierce += 1
 		pierce_cost = int(pierce_cost * 3)
@@ -484,8 +484,6 @@ func buy_pierce():
 		save_game()
 
 func buy_max_health():
-	if base_max_health >= 15:
-		return
 	if money >= max_health_cost:
 		money -= max_health_cost
 		upgrades_bought += 1
@@ -498,8 +496,6 @@ func buy_max_health():
 		save_game()
 
 func buy_crit_chance():
-	if player.crit_chance >= 0.5:
-		return
 	if money >= crit_chance_cost:
 		money -= crit_chance_cost
 		upgrades_bought += 1
@@ -510,8 +506,6 @@ func buy_crit_chance():
 		save_game()
 
 func buy_multishot():
-	if player.bullet_count >= 5:
-		return
 	if money >= multishot_cost:
 		money -= multishot_cost
 		upgrades_bought += 1
@@ -521,12 +515,10 @@ func buy_multishot():
 		save_game()
 
 func buy_repair():
-	if health >= max_health:
-		return
 	if money >= repair_cost:
 		money -= repair_cost
 		health += 1
-		repair_cost = int(repair_cost * 1.3)
+		repair_cost = int(repair_cost * 1.09)
 		update_ui()
 		save_game()
 
