@@ -201,7 +201,7 @@ func spawn_boss():
 	boss.size = 5.0
 	boss.health = int(150 + get_level() * 7)
 	boss.damage = 10
-	boss.speed = 50
+	boss.speed = 40
 	boss.value = 100 + wave * 20
 	add_child(boss)
 	boss.position = Vector2(get_viewport_rect().size.x/ 2, -150)

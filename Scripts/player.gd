@@ -151,6 +151,7 @@ func shoot():
 	make_muzzle_flash(muzzle_pos)
 	for i in bullet_count:
 		var bullet = bullet_scene.instantiate()
+		bullet.is_player_bullet = true
 		bullet.pierce = bullet_pierce
 		bullet.damage = bullet_damage
 		var offset = ( i - (bullet_count - 1)/ 2.0) * spread

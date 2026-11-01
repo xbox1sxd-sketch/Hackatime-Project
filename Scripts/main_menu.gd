@@ -56,6 +56,7 @@ func _build_ship_buttons():
 		btn.tooltip_text = ship["text"]
 		if ship["unlock_wave"] > best_wave:
 			btn.disabled = true
+		btn.add_theme_color_override("font_color", Color(0.5,0.5, 0.5))
 		btn.add_theme_color_override("font_color", ship["color"])
 		btn.pressed.connect(_select_ship.bind(id))
 		ship_row.add_child(btn)

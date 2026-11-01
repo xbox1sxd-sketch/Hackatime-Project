@@ -178,15 +178,15 @@ text = "Upgrade"
 [node name="OfflineUpgrade" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1505741055]
 layout_mode = 2
 
+[node name="Pierce" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=625479318]
+layout_mode = 2
+text = "Upgrade"
+
 [node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1698430788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Close shop (M)
 "
-
-[node name="Pierce" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=625479318]
-layout_mode = 2
-text = "Upgrade"
 
 [node name="UpgradeMenuPrompt" type="Label" parent="CanvasLayer" unique_id=2133699322]
 offset_left = 823.0
