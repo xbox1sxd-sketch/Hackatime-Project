@@ -22,7 +22,6 @@ func _ready():
 	_build_ship_buttons()
 
 func start_new_game():
-	var save_path = "user://save.json"
 	if FileAccess.file_exists("user://save.json"):
 		DirAccess.remove_absolute("user://save.json")
 	start_game()

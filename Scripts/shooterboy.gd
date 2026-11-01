@@ -29,7 +29,7 @@ func shoot():
 	var dir = (get_parent().player.global_position - global_position).normalized() # ai was used for this line and the line below
 	bullet.global_rotation = dir.angle()
 
-func take_hit(amount, hit_pos = null):
+func take_hit(amount, _hit_pos = null):
 	health -= amount
 	if health <= 0:
 		die()

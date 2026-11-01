@@ -29,7 +29,7 @@ func _process(delta):
 		shoot_timer -= delta
 		if shoot_timer <= 0:
 			shoot_at_player()
-			shoot_timer = 1.5 if is_rage else 3.0
+			shoot_timer = 1.5 if is_rage else 0.9
 		spawn_timer -= delta
 		if spawn_timer <= 0:
 			spawn_minion()
