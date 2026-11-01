@@ -7,11 +7,17 @@ extends Control
 @onready var ship_preview = $VBoxContainer/ShipPreview
 @onready var resume: Button = $VBoxContainer/Resume
 @onready var new_game: Button = $VBoxContainer/NewGame
-
+@onready var controls_btn = $VBoxContainer/ControlsBtn
+@onready var controls_menu = $ControlsMenu
+@onready var back_btn = $ControlsMenu/ColorRect/VBoxContainer/Backbtn
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	new_game.pressed.connect(start_new_game)
 	resume.pressed.connect(start_game)
+	controls_btn.pressed.connect(show_controls)
+	back_btn.pressed.connect(hide_controls)
+	controls_menu.visible = false
+	
 	$VBoxContainer/Quit.pressed.connect(quit_game)
 	reset.pressed.connect(show_reset_warning)
 	confirmation_dialog.confirmed.connect(delete_save_data)
@@ -85,6 +91,12 @@ func start_game():
 
 func quit_game():
 	get_tree().quit()
+
+func show_controls():
+	controls_menu.visible = true
+
+func hide_controls():
+	controls_menu.visible = false
 
 func show_reset_warning():
 	confirmation_dialog.popup_centered()

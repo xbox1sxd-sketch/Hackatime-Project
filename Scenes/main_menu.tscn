@@ -88,6 +88,11 @@ layout_mode = 2
 text = "Reset Data"
 autowrap_trim_flags = 0
 
+[node name="ControlsBtn" type="Button" parent="VBoxContainer" unique_id=894636078]
+layout_mode = 2
+text = "Controls
+"
+
 [node name="Label2" type="Label" parent="." unique_id=1918664443]
 layout_mode = 0
 offset_left = 407.0
@@ -104,3 +109,44 @@ dialog_text = "WARNING THIS WILL DELETE YOUR WHOLE PLAYTHROUGH."
 [node name="UISound" type="AudioStreamPlayer" parent="." unique_id=2078578997]
 stream = SubResource("AudioStreamWAV_4kd3g")
 volume_db = -5.0
+
+[node name="ControlsMenu" type="CanvasLayer" parent="." unique_id=1937299426]
+
+[node name="ColorRect" type="ColorRect" parent="ControlsMenu" unique_id=1581925250]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08235294, 0.08235294, 0.08235294, 0.95686275)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ControlsMenu/ColorRect" unique_id=2022130080]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Controls" type="Label" parent="ControlsMenu/ColorRect/VBoxContainer" unique_id=880014688]
+layout_mode = 2
+text = "CONTROLS"
+
+[node name="ControlText" type="Label" parent="ControlsMenu/ColorRect/VBoxContainer" unique_id=2035401502]
+layout_mode = 2
+text = "Mouse - move ship
+Left click - Shoot
+Right click - drop bomb
+M - open Upgrades
+Esc - Pause Game
+To kill green meteors you must blow them up"
+
+[node name="Backbtn" type="Button" parent="ControlsMenu/ColorRect/VBoxContainer" unique_id=716473273]
+layout_mode = 2
+text = "Back"

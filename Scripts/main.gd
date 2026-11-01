@@ -136,6 +136,8 @@ func _ready():
 	prestige.pressed.connect(do_prestige)
 	money_label.position = Vector2(20, 20)
 	money_label.add_theme_font_size_override("font_size", 28)
+	gem_label.position = Vector2(20, -10)
+	gem_label.add_theme_font_size_override("font_size", 28)
 	spawn_timer = Timer.new()
 	spawn_timer.process_mode = Node.PROCESS_MODE_PAUSABLE
 	spawn_timer.timeout.connect(spawn_asteroid)
@@ -388,7 +390,7 @@ func update_ui():
 	if player.bomb_ready:
 		status += "\nBOMB IS PREPPED (PRESS RIGHT CLICK)"
 	else:
-		status += "\n Bomb is Recharging"
+		status += "\nBomb is Recharging"
 	
 	var final_text = ""
 	if offline_message != "":
