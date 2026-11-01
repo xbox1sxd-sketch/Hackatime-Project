@@ -291,7 +291,7 @@ func _process(_delta):
 func add_money(amount, from_kill = false):
 	var combo_mult = 1.0
 	if from_kill:
-		combo_mult = 1.0 + ((combo - 1) * 0.2)
+		combo_mult = 1.0 + ((combo - 1) * 0.05)
 	var prestige_mult = 1.0 + (prestige_level * 0.1)
 	var ship_money_mult = Ships.DATA[selected_ship]["shipperk"].get("money", 1.0)
 	var final_money = int(ceil(amount * payout_scale * prestige_mult * ship_money_mult * combo_mult))
@@ -300,8 +300,7 @@ func add_money(amount, from_kill = false):
 	update_ui()
 
 func combo_kill():
-	if combo < 10:
-		combo = combo + 1
+	combo = combo + 1
 	combo_timer.start(2.0)
 	update_ui()
 
