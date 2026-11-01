@@ -14,6 +14,7 @@ extends Node2D
 @onready var ui_sound = $CanvasLayer/UISound
 @onready var money_label = $CanvasLayer/MoneyLabel
 @onready var player = $Player
+@onready var auto_fire = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/AutoFire
 @onready var offline_btn = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/OfflineUpgrade
 @onready var boss_health_bar = $CanvasLayer/BossHealthBar
 @onready var bomb_cooldown = $CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer/BombCooldown
@@ -93,6 +94,8 @@ var offline_level = 0
 var offline_cost = 1000
 var last_played_time = 0
 var total_money_earned = 0
+var auto_fire_enabled = false
+var auto_fire_cost = 5000
 
 func start_next_wave():
 	boss_spawned = false
@@ -154,6 +157,7 @@ func _ready():
 	bomb_double.pressed.connect(buy_bomb_double)
 	offline_btn.pressed.connect(buy_offline_upgrade)
 	pierce.pressed.connect(buy_pierce)
+	auto_fire.pressed.connect(buy_auto_fire)
 	load_game()
 	player.apply_ship_color(Ships.DATA[selected_ship]["color"])
 	recalculate_max_health()
@@ -387,6 +391,13 @@ func update_ui():
 		pierce.text = "Pierce is MAX"
 		pierce.disabled = true
 	
+	if not auto_fire_enabled:
+		auto_fire.text = "Auto Fire\n$" + str(auto_fire_cost)
+		auto_fire.disabled = money < auto_fire_cost
+	else:
+		auto_fire.text = "Auto Fire Unlocked"
+		auto_fire.disabled = true
+	
 	if base_max_health < 15:
 		maxhealth.text = "Max Health +1\n$" + str(max_health_cost)
 		maxhealth.disabled = money < max_health_cost
@@ -553,6 +564,14 @@ func buy_bomb_double():
 		update_ui()
 		save_game()
 
+func buy_auto_fire():
+	if money >= auto_fire_cost and not auto_fire_enabled:
+		money -= auto_fire_cost
+		auto_fire_enabled = true
+		player.auto_fire = true
+		update_ui()
+		save_game()
+
 func buy_offline_upgrade():
 	if money >= offline_cost:
 		money -= offline_cost
@@ -599,6 +618,8 @@ func do_prestige():
 	bomb_cd_cost = 300
 	bomb_dmg_cost = 250
 	base_max_health = 5
+	auto_fire_enabled = false
+	player.auto_fire = false
 	recalculate_max_health()
 	health = max_health
 	toggle_upgrade_menu()
@@ -637,6 +658,7 @@ func save_game():
 		"offline_cost": offline_cost,
 		"total_money_earned": total_money_earned,
 		"bullet_pierce": player.bullet_pierce,
+		"auto_fire": auto_fire_enabled,
 		"last_played": Time.get_unix_time_from_system()
 	}
 
@@ -679,6 +701,9 @@ func load_game():
 	last_played_time = float(data.get("last_played", 0))
 	total_money_earned = int(data.get("total_money_earned", 0))
 	player.bullet_pierce = int(data.get("bullet_pierce", 0))
+	auto_fire_enabled = bool(data.get("auto_fire", false))
+	if auto_fire_enabled:
+		player.auto_fire = true
 	if last_played_time > 0 and offline_level > 0:
 		var current_time = Time.get_unix_time_from_system()
 		var seconds_away = int(current_time - last_played_time)

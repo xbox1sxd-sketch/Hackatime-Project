@@ -174,6 +174,10 @@ layout_mode = 2
 layout_mode = 2
 text = "Upgrade"
 
+[node name="AutoFire" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1801513908]
+layout_mode = 2
+text = "Upgrade"
+
 [node name="Closeshop" type="Button" parent="CanvasLayer/PanelContainer/MarginContainer/ScrollContainer/VBoxContainer" unique_id=1698430788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20

@@ -20,6 +20,7 @@ var bomb_twice = false
 var target_position = Vector2.ZERO
 var max_speed = 900.0
 var bullet_pierce = 0
+var auto_fire = false
 @onready var sprite = $AnimatedSprite2D
 
 
@@ -49,13 +50,13 @@ func start_bomb_charge():
 	bomb_ready = true
 	get_parent().update_ui()
 
-
-
 func _process(delta):
 	if get_parent().menu_open or get_parent().game_over:
 		return
 		#finally using lerp lol
 	global_position = global_position.lerp(target_position, 20 * delta)
+	if auto_fire:
+		shoot()
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		shoot()
 
