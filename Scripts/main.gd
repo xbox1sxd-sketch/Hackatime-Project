@@ -679,7 +679,7 @@ func do_prestige():
 	player.base_crit_chance = 0.1
 	fire_rate_cost = 60
 	multishot_cost = 150
-	repair_cost = 40
+	repair_cost = 30
 	damage_cost = 100
 	max_health_cost = 120
 	crit_chance_cost = 200
@@ -692,6 +692,9 @@ func do_prestige():
 	auto_fire_enabled = false
 	player.auto_fire = false
 	player.bullet_pierce = 0
+	pierce_cost = 500
+	for a in get_tree().get_nodes_in_group("asteroids"):
+		a.queue_free()
 	recalculate_max_health()
 	health = max_health
 	toggle_upgrade_menu()
@@ -735,6 +738,7 @@ func save_game():
 		"explosive_unlocked": explosive_unlocked,
 		"lifesteal_level": lifesteal_level,
 		"lifesteal_cost": lifesteal_cost,
+		"pierce_cost": pierce_cost,
 		"last_played": Time.get_unix_time_from_system()
 	}
 
@@ -782,6 +786,7 @@ func load_game():
 	explosive_unlocked = bool(data.get("explosive_unlocked", false))
 	lifesteal_level = int(data.get("lifesteal_level", 0))
 	lifesteal_cost = int(data.get("lifesteal_cost", 10))
+	pierce_cost = int(data.get("pierce_cost", 500))
 	if auto_fire_enabled:
 		player.auto_fire = true
 	if last_played_time > 0 and offline_level > 0:
